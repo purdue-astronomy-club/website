@@ -1,0 +1,6 @@
+<footer class="site-footer"><div class="container footer-main">
+<div><a class="brand" href="/"><span class="brand-mark">{{ partial "icon.html" "telescope" }}</span><span>Purdue Astronomy Club</span></a><p>{{ hugo.Data.site.footer_text }}</p></div>
+<div class="footer-links">{{ if where site.RegularPages "Section" "sponsors" }}<a href="/sponsors/">Sponsors & partners</a>{{ end }}<a href="/events/">Explore the calendar <span aria-hidden="true">↗</span></a><a href="/contact/">Contact & accessibility</a>
+{{ with hugo.Data.site.public_email }}<a href="mailto:{{ . }}">Email the club</a>{{ end }}
+{{ range slice "instagram" "discord" "github" }}{{ $label := . }}{{ with index hugo.Data.site . }}<a href="{{ . }}">{{ if eq $label "github" }}GitHub{{ else }}{{ $label | title }}{{ end }}</a>{{ end }}{{ end }}
+</div></div><div class="container footer-bottom"><span>© {{ now.Format "2006" }} Purdue Astronomy Club</span></div></footer>

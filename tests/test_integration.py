@@ -1,0 +1,81 @@
+"""Build realistic CMS-shaped fixtures in an isolated temporary checkout."""
+from pathlib import Path
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
+import yaml
+from PIL import Image
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
+from content import ROOT
+from build_calendar import generate
+from optimize_images import optimize
+from validate_public_output import validate
+
+class IntegrationTests(unittest.TestCase):
+    def test_publish_all_models_then_move_cancel_and_draft_event(self):
+        hugo=os.environ.get('HUGO_BIN') or shutil.which('hugo')
+        if not hugo:self.skipTest('Hugo is needed for full integration build')
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            for folder in ['content','data','assets','layouts','static']:
+                ignore=shutil.ignore_patterns('media','drive-gallery','astronomy','events','events.json','months.json','calendar.ics') if folder=='static' else None
+                shutil.copytree(ROOT/folder,root/folder,ignore=ignore)
+            shutil.copy(ROOT/'hugo.yaml',root/'hugo.yaml')
+            (root/'data/astronomy.yml').write_text('enabled: false\n')
+            def write(section,slug,record):
+                (root/'content'/section/f'{slug}.md').write_text('---\n'+yaml.safe_dump(record)+'---\nFixture rich text body.'+('\n\n![Fixture inline photo](/uploads/fixture-0.jpg)' if section=='announcements' else ''))
+            photos=[]
+            for i in range(3):
+                image=f'/uploads/fixture-{i}.jpg'
+                Image.new('RGB',(800,600),(30+i*50,40,80)).save(root/'static'/image.lstrip('/'))
+                photos.append({'image':image,'alt':f'Fixture image {i}','caption':f'Fixture caption {i}','credit':f'Test contributor {i}'})
+            event={'title':'Fixture event','summary':'Fixture summary','draft':False,'category':'workshop','calendar_type':'joint','status':'scheduled','start_date':'2040-10-22','start_time':'19:00','end_time':'21:00','all_day':False,'cover_image':photos[0]['image'],'cover_alt':photos[0]['alt'],'related_album_slug':'fixture-album'}
+            write('events','fixture-event',event)
+            write('albums','fixture-album',{'title':'Fixture album','draft':False,'event_date':'2040-10-22','featured':False,'permission_to_publish':True,'photos':photos,'related_event_slug':'fixture-event'})
+            write('astrophotography','fixture-image',{'title':'Fixture image','draft':False,'featured':False,'image':photos[1]['image'],'alt':photos[1]['alt'],'photographer':'Test contributor','permission_to_publish':True})
+            write('officers','fixture-officer',{'title':'Test officer','role':'Test role','draft':False,'active':True,'display_order':1,'image':photos[2]['image'],'image_alt':photos[2]['alt']})
+            write('sponsors','fixture-sponsor',{'title':'Test sponsor','draft':False,'logo':photos[2]['image'],'logo_alt':photos[2]['alt'],'website':'https://example.com/','display_order':1})
+            write('announcements','fixture-news',{'title':'Fixture announcement','draft':False,'publish_date':'2020-01-01','summary':'Fixture news','image':photos[1]['image'],'image_alt':photos[1]['alt']})
+            write('announcements','future-news',{'title':'Future fixture','draft':False,'publish_date':'2099-01-01','summary':'Should be scheduled'})
+            def build():
+                generate(root);optimize(root)
+                subprocess.run([hugo,'--source',str(root),'--minify','--cleanDestinationDir'],check=True,capture_output=True)
+                validate(root/'public')
+            build()
+            homepage=(root/'public/index.html').read_text()
+            self.assertIn('Fixture event',homepage)
+            self.assertEqual(homepage.count('carousel-slide'),4)
+            for i in range(3):
+                self.assertIn(f'Fixture caption {i}',homepage)
+                self.assertIn(f'Test contributor {i}',homepage)
+            self.assertIn('Fixture image',homepage)
+            self.assertIn('Joint event',(root/'public/events/fixture-event/index.html').read_text())
+            album=(root/'public/albums/fixture-album/index.html').read_text()
+            for i in range(3):
+                self.assertIn(f'Fixture caption {i}',album)
+                self.assertIn(f'Test contributor {i}',album)
+            self.assertIn('Fixture album',(root/'public/gallery/index.html').read_text())
+            self.assertIn('Fixture image',(root/'public/gallery/index.html').read_text())
+            self.assertFalse((root/'public/announcements/future-news/index.html').exists())
+            self.assertIn('Fixture announcement',(root/'public/announcements/index.html').read_text())
+            self.assertIn('alt="Fixture image 2"',(root/'public/officers/index.html').read_text())
+            profile=(root/'public/officers/fixture-officer/index.html').read_text()
+            self.assertIn('alt="Fixture image 2"',profile)
+            self.assertIn('Test role',profile)
+            self.assertIn('Meet all officers',profile)
+            event['start_date']='2040-11-23';write('events','fixture-event',event);build()
+            self.assertIn('2040-11-23',(root/'public/events.json').read_text())
+            self.assertNotIn('20401022',(root/'public/calendar.ics').read_text())
+            event['status']='cancelled';write('events','fixture-event',event);build()
+            self.assertNotIn('Fixture event',(root/'public/index.html').read_text())
+            self.assertIn('Cancelled',(root/'public/events/fixture-event/index.html').read_text())
+            self.assertIn('STATUS:CANCELLED',(root/'public/calendar.ics').read_text())
+            event['draft']=True;write('events','fixture-event',event)
+            # Remove reverse reference before archiving; the public album may remain published.
+            build()
+            self.assertEqual(json.loads((root/'public/events.json').read_text()),[])
+            self.assertFalse((root/'public/events/fixture-event/index.html').exists())

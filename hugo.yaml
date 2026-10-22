@@ -1,0 +1,33 @@
+baseURL: https://purdueastro.club/
+title: Purdue Astronomy Club
+locale: en-US
+timeZone: America/Indiana/Indianapolis
+enableRobotsTXT: true
+disableKinds:
+- taxonomy
+- term
+cleanDestinationDir: true
+permalinks:
+  events: /events/:filename/
+  astronomy: /astronomy/:filename/
+  albums: /albums/:filename/
+  astrophotography: /astrophotography/:filename/
+  announcements: /announcements/:filename/
+markup:
+  goldmark:
+    renderer:
+      unsafe: false
+params:
+  description: Exploring the universe through observation, education, and community.
+frontmatter:
+  publishDate:
+  - publish_date
+  - publishDate
+module:
+  mounts:
+  - source: content
+    target: content
+  - source: .generated/content/astronomy
+    target: content/astronomy
+  - source: .generated/content/drive-gallery
+    target: content/astrophotography

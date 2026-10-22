@@ -1,0 +1,4 @@
+<article class="event-card type-{{ .calendarType }} status-{{ .status }}">
+{{ partial "event-date.html" . }}<div class="event-card-body"><span class="tag">{{ .categoryLabel }}{{ if ne .status "scheduled" }} · {{ .status | title }}{{ end }}</span><h3><a href="{{ .url }}">{{ .title }}</a></h3><p class="event-meta">{{ if eq .status "postponed" }}New date to be announced{{ else }}{{ .timeLabel }}{{ with .location }}<br>{{ . }}{{ end }}{{ end }}</p><p>{{ .summary }}</p></div>
+{{ with .coverImage }}{{ partial "optimized-image.html" (dict "src" . "alt" $.coverAlt "class" "event-cover" "sizes" "96px") }}{{ end }}
+</article>

@@ -1,0 +1,27 @@
+{{ define "main" }}
+<div class="container page-shell">
+  {{ partial "breadcrumbs.html" . }}
+  <div class="page-heading">
+    <p class="eyebrow">{{ with .Params.term }}{{ . }} Officer Core{{ else }}The people behind the club{{ end }}</p>
+    <h1>Our Officers</h1>
+    <div class="lead">{{ .Content }}</div>
+  </div>
+  {{ $officers := where .RegularPages "Params.active" true }}
+  {{ if $officers }}
+  <div class="card-grid">
+    {{ range sort $officers "Params.display_order" }}
+    {{ $officer := . }}
+    <article class="officer-card">
+      {{ with .Params.image }}{{ partial "optimized-image.html" (dict "src" . "alt" $officer.Params.image_alt "sizes" "(max-width: 767px) calc(100vw - 100px), (max-width: 1023px) 45vw, 30vw") }}{{ end }}
+      <p class="eyebrow">{{ .Params.role }}</p>
+      <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+      <div class="prose">{{ .Content }}</div>
+      {{ with .Params.public_contact }}<a href="mailto:{{ . }}">Email {{ $officer.Title }}</a>{{ end }}
+    </article>
+    {{ end }}
+  </div>
+  {{ else }}
+  {{ partial "empty-state.html" (dict "title" "Meet the team, soon." "text" "Current officer introductions will be shared here once confirmed." "url" "/contact/" "label" "Contact the club") }}
+  {{ end }}
+</div>
+{{ end }}

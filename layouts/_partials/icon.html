@@ -1,0 +1,7 @@
+<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+{{ if eq . "telescope" }}<path d="m8 19 25-11 5 11-25 11zM29 10l5 12M12 20l4 8M7 23l-3 2 2 5 3-1M23 27v5m0 0-10 12m10-12 10 12m-10-12v12M39 6l2-3m0 8 4-1"/>
+{{ else if eq . "camera" }}<path d="M6 15h9l3-6h12l3 6h9v25H6z"/><circle cx="24" cy="27" r="9"/><path d="M35 20h2"/>
+{{ else if eq . "workshop" }}<path d="M7 39V9h14l4 4 4-4h12v30H29l-4 4-4-4zM25 13v30M12 17h7m-7 7h7m-7 7h7M31 17h5m-5 7h5m-5 7h5"/>
+{{ else if eq . "community" }}<circle cx="24" cy="14" r="7"/><path d="M11 41v-5a13 13 0 0 1 26 0v5M8 12a6 6 0 0 0 0 12M40 12a6 6 0 0 1 0 12M3 38v-4a9 9 0 0 1 7-9m35 13v-4a9 9 0 0 0-7-9"/>
+{{ else }}<path d="M24 4v8m0 24v8M4 24h8m24 0h8M10 10l6 6m16 16 6 6m0-28-6 6M16 32l-6 6"/><circle cx="24" cy="24" r="5"/>
+{{ end }}</svg>

@@ -1,0 +1,46 @@
+name: Generate Monthly Calendar Graphic
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: 'Pages CMS JSON payload, for example {"inputs":{"month":"2026-10"}}'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - run: pip install -r requirements-ci.txt
+      - run: bash scripts/install-hugo.sh
+      - uses: actions/cache/restore@v6.1.0
+        with:
+          path: .generated/meteor-cache.json
+          key: meteor-forecasts-${{ github.run_id }}
+          restore-keys: meteor-forecasts-
+      - run: python scripts/build.py
+        env:
+          DRIVE_GALLERY_CREDENTIALS_JSON: ${{ secrets.DRIVE_GALLERY_CREDENTIALS_JSON }}
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Export from the website calendar
+        env:
+          CMS_PAYLOAD: ${{ inputs.payload }}
+        run: |
+          python -m http.server 1313 --bind 127.0.0.1 --directory public &
+          curl --fail --silent --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:1313/ > /dev/null
+          node scripts/export-calendar.mjs
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: monthly-calendar
+          path: calendar-exports
+          if-no-files-found: error

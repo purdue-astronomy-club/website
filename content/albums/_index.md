@@ -1,0 +1,3 @@
+---
+title: Event Photo Albums
+---

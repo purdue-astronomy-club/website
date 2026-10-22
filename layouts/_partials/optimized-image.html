@@ -1,0 +1,2 @@
+{{ $meta := index hugo.Data.generated.images .src }}
+<img src="{{ if $meta }}{{ $meta.src }}{{ else }}{{ .src }}{{ end }}" alt="{{ .alt }}"{{ with .class }} class="{{ . }}"{{ end }}{{ if $meta }} srcset="{{ $meta.srcset }}" sizes="{{ .sizes | default "(max-width: 767px) 100vw, 50vw" }}" width="{{ $meta.width }}" height="{{ $meta.height }}"{{ else }} width="1920" height="900"{{ end }} loading="{{ .loading | default "lazy" }}" decoding="async">

@@ -1,0 +1,8 @@
+enabled: true
+moon_phases: true
+planetary_oppositions: true
+meteor_showers: true
+seasons: true
+years_past: 1
+years_ahead: 1
+hidden_events: []

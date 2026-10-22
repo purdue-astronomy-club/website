@@ -1,0 +1,78 @@
+{
+  "source_url": "https://www.amsmeteors.org/calendar/",
+  "checked_on": "2026-10-22",
+  "records": [
+    {
+      "id": "orionids",
+      "name": "Orionids",
+      "start_date": "2026-10-21",
+      "end_date": "2026-10-22"
+    },
+    {
+      "id": "southern-taurids",
+      "name": "Southern Taurids",
+      "start_date": "2026-11-04",
+      "end_date": "2026-11-05"
+    },
+    {
+      "id": "northern-taurids",
+      "name": "Northern Taurids",
+      "start_date": "2026-11-11",
+      "end_date": "2026-11-12"
+    },
+    {
+      "id": "leonids",
+      "name": "Leonids",
+      "start_date": "2026-11-16",
+      "end_date": "2026-11-17"
+    },
+    {
+      "id": "geminids",
+      "name": "Geminids",
+      "start_date": "2026-12-13",
+      "end_date": "2026-12-14"
+    },
+    {
+      "id": "ursids",
+      "name": "Ursids",
+      "start_date": "2026-12-21",
+      "end_date": "2026-12-22"
+    },
+    {
+      "id": "quadrantids",
+      "name": "Quadrantids",
+      "start_date": "2027-01-03",
+      "end_date": "2027-01-04"
+    },
+    {
+      "id": "lyrids",
+      "name": "Lyrids",
+      "start_date": "2027-04-21",
+      "end_date": "2027-04-22"
+    },
+    {
+      "id": "eta-aquariids",
+      "name": "Eta Aquariids",
+      "start_date": "2027-05-05",
+      "end_date": "2027-05-06"
+    },
+    {
+      "id": "southern-delta-aquariids",
+      "name": "Southern Delta Aquariids",
+      "start_date": "2027-07-30",
+      "end_date": "2027-07-31"
+    },
+    {
+      "id": "alpha-capricornids",
+      "name": "Alpha Capricornids",
+      "start_date": "2027-07-30",
+      "end_date": "2027-07-31"
+    },
+    {
+      "id": "perseids",
+      "name": "Perseids",
+      "start_date": "2027-08-12",
+      "end_date": "2027-08-13"
+    }
+  ]
+}

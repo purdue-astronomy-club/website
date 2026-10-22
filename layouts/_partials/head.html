@@ -1,0 +1,21 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ if not .IsHome }}{{ .Title }} · {{ end }}{{ site.Title }}</title>
+{{ $description := .Params.summary | default .Description | default site.Params.description }}
+<meta name="description" content="{{ $description }}">
+<link rel="canonical" href="{{ .Permalink }}">
+<meta name="theme-color" content="#080C10">
+<meta property="og:site_name" content="{{ site.Title }}">
+<meta property="og:title" content="{{ .Title | default site.Title }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ .Permalink }}">
+{{ $hero := resources.Get "images/hero-bell-tower.webp" }}
+{{ $ogImage := $hero.Permalink }}{{ $ogAlt := "Illustration of the Purdue Bell Tower beneath a star-filled sky" }}
+{{ if .IsHome }}{{ with hugo.Data.home.hero_image }}{{ $ogImage = . | absURL }}{{ $ogAlt = hugo.Data.home.hero_image_alt }}{{ end }}{{ else }}{{ with .Params.image | default .Params.cover_image }}{{ $ogImage = . | absURL }}{{ $ogAlt = $.Params.alt | default $.Params.image_alt | default $.Params.cover_alt }}{{ end }}{{ end }}
+<meta property="og:image" content="{{ $ogImage }}">
+<meta property="og:image:alt" content="{{ $ogAlt }}">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="text/calendar" title="Purdue Astronomy Club calendar" href="/calendar.ics">
+{{ $css := resources.Get "css/main.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">

@@ -1,0 +1,732 @@
+# Officer-facing content editor. See docs/OFFICER_GUIDE.md.
+media:
+  input: static/uploads
+  output: /uploads
+  rename: random
+  extensions:
+  - jpg
+  - jpeg
+  - png
+  - webp
+content:
+- name: events
+  label: Events and Calendar
+  type: collection
+  path: content/events
+  format: yaml-frontmatter
+  filename:
+    template: '{primary}.md'
+    field: create
+  view:
+    fields:
+    - title
+    - start_date
+    - status
+    - draft
+    primary: title
+    sort:
+    - start_date
+    - title
+    default:
+      sort: start_date
+      order: desc
+  fields:
+  - name: title
+    label: Event title
+    type: string
+    required: true
+  - name: summary
+    label: Short description
+    type: text
+    required: true
+  - name: draft
+    label: Keep as draft (not public)
+    type: boolean
+    default: true
+  - name: status
+    label: Event status
+    type: select
+    default: scheduled
+    options:
+      values:
+      - name: scheduled
+        label: Scheduled
+      - name: tentative
+        label: Tentative
+      - name: cancelled
+        label: Cancelled
+      - name: postponed
+        label: Postponed
+  - name: calendar_type
+    label: Calendar color/category
+    type: select
+    default: pac
+    required: true
+    options:
+      values:
+      - name: pac
+        label: PAC event (gold)
+      - name: joint
+        label: Joint event (blue)
+  - name: category
+    label: Activity type
+    type: select
+    options:
+      values:
+      - observing
+      - workshop
+      - talk
+      - outreach
+      - social
+      - other
+  - name: start_date
+    label: Event date (Indiana local)
+    type: date
+    required: true
+    options:
+      format: yyyy-MM-dd
+  - name: start_time
+    label: Start time (24h, e.g. 19:00)
+    type: string
+    default: '19:00'
+    pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+  - name: end_date
+    label: End date (if different)
+    type: date
+    default: ''
+    options:
+      format: yyyy-MM-dd
+  - name: end_time
+    label: End time (24h)
+    type: string
+  - name: all_day
+    label: All-day event
+    type: boolean
+    default: false
+  - name: location
+    label: Location
+    type: string
+  - name: registration_url
+    label: Public signup link (optional)
+    type: string
+  - name: related_album_slug
+    label: Later photo album slug (optional)
+    type: string
+  - name: cover_image
+    label: Cover photograph
+    type: image
+  - name: cover_alt
+    label: Describe cover photo for accessibility
+    type: text
+  - name: address
+    label: Public address (optional)
+    type: string
+  - name: map_url
+    label: Public map link (HTTPS)
+    type: string
+  - name: body
+    label: Full event description
+    type: rich-text
+    options:
+      format: markdown
+  operations:
+    rename: false
+- name: astronomy
+  label: Astronomy and Night Sky
+  type: collection
+  path: content/astronomy
+  format: yaml-frontmatter
+  filename:
+    template: '{primary}.md'
+    field: create
+  view:
+    fields:
+    - title
+    - start_date
+    - kind
+    - draft
+    primary: title
+    sort:
+    - start_date
+    - title
+    default:
+      sort: start_date
+      order: desc
+  fields:
+  - name: title
+    label: Astronomy event title
+    type: string
+    required: true
+  - name: draft
+    label: Keep as draft until date/source verified
+    type: boolean
+    default: true
+  - name: kind
+    label: Astronomy event type
+    type: select
+    required: true
+    options:
+      values:
+      - new_moon
+      - full_moon
+      - first_quarter
+      - last_quarter
+      - meteor_shower
+      - planetary
+      - eclipse
+      - other
+      - opposition
+      - season
+  - name: start_date
+    label: Date in Indiana
+    type: date
+    required: true
+    options:
+      format: yyyy-MM-dd
+  - name: start_time
+    label: Time (24h; optional)
+    type: string
+  - name: end_date
+    label: End date (optional)
+    type: date
+    options:
+      format: yyyy-MM-dd
+    default: ''
+  - name: end_time
+    label: End time (optional)
+    type: string
+  - name: all_day
+    label: All-day/date-only
+    type: boolean
+    default: true
+  - name: summary
+    label: Verified description
+    type: text
+    required: true
+  - name: source_url
+    label: Trusted source URL (required before publication)
+    type: string
+  - name: last_verified
+    label: Date verified (optional)
+    type: date
+    options:
+      format: yyyy-MM-dd
+    default: ''
+  - name: body
+    type: rich-text
+    options:
+      format: markdown
+  - name: planet
+    label: Planet (for opposition/planetary highlights)
+    type: select
+    options:
+      values:
+      - Mars
+      - Jupiter
+      - Saturn
+      - Uranus
+      - Neptune
+  - name: replaces_auto_event
+    label: Automatic event reference to replace (optional)
+    type: string
+  operations:
+    rename: false
+- name: automatic_sky
+  label: Automatic Sky Calendar
+  type: file
+  path: data/astronomy.yml
+  format: yaml
+  operations:
+    delete: false
+  fields:
+  - name: enabled
+    label: Automatically fill the sky calendar
+    type: boolean
+    default: true
+  - name: moon_phases
+    label: Moon phases
+    type: boolean
+    default: true
+  - name: planetary_oppositions
+    label: Planetary oppositions
+    type: boolean
+    default: true
+  - name: meteor_showers
+    label: AMS meteor-shower peak nights
+    type: boolean
+    default: true
+  - name: seasons
+    label: Equinoxes and solstices
+    type: boolean
+    default: true
+  - name: years_past
+    label: Past years to include (0–2)
+    type: number
+    default: 1
+    options:
+      min: 0
+      max: 2
+  - name: years_ahead
+    label: Future years to include (0–2)
+    type: number
+    default: 1
+    options:
+      min: 0
+      max: 2
+  - name: hidden_events
+    label: Hide automatic entries by their event reference
+    type: string
+    list: true
+- name: calendar_months
+  label: Calendar Months and Banner Photos
+  type: file
+  path: data/calendar/banners.yml
+  format: yaml
+  list: true
+  operations:
+    delete: false
+  fields:
+  - name: month
+    label: Month YYYY-MM (unique)
+    type: string
+    required: true
+    pattern: ^\d{4}-(0[1-9]|1[0-2])$
+  - name: banner_image
+    label: Upload monthly astrophotography banner
+    type: image
+  - name: banner_alt
+    label: Describe banner image for accessibility
+    type: text
+  - name: photographer
+    label: Photographer credit
+    type: string
+  - name: permission_to_publish
+    label: Photographer approved publication
+    type: boolean
+    default: false
+  - name: night_sky_notes
+    label: Verified monthly sky notes (optional)
+    type: text
+  - name: visible_planets_notes
+    label: Verified planetary notes (optional)
+    type: text
+  - name: source_url
+    label: Trusted source URL for sky notes
+    type: string
+  - name: last_verified
+    label: Sky notes verified on
+    type: date
+    default: ''
+    options:
+      format: yyyy-MM-dd
+- name: albums
+  label: Event Photo Albums
+  type: collection
+  path: content/albums
+  format: yaml-frontmatter
+  filename:
+    template: '{primary}.md'
+    field: create
+  view:
+    fields:
+    - title
+    - event_date
+    - draft
+    primary: title
+    sort:
+    - event_date
+    - title
+    default:
+      sort: event_date
+      order: desc
+  fields:
+  - name: title
+    label: Album title
+    type: string
+    required: true
+  - name: event_date
+    label: Event date
+    type: date
+    required: true
+    options:
+      format: yyyy-MM-dd
+  - name: summary
+    label: Album description
+    type: text
+  - name: draft
+    label: Keep as draft (not public)
+    type: boolean
+    default: true
+  - name: permission_to_publish
+    label: Permission to publish all album photos confirmed
+    type: boolean
+    default: false
+  - name: related_event_slug
+    label: Related event slug (optional)
+    type: string
+  - name: cover_image
+    label: Album cover photograph
+    type: image
+  - name: cover_alt
+    label: Describe the cover image
+    type: text
+  - name: photos
+    label: Photos (repeat these fields for each image)
+    type: object
+    list:
+      collapsible:
+        collapsed: true
+        summary: '{caption} (#{index})'
+      min: 1
+    fields:
+    - name: image
+      label: Upload/select photo
+      type: image
+      required: true
+    - name: alt
+      label: What is shown? (alt text)
+      type: text
+      required: true
+    - name: caption
+      label: Optional caption
+      type: text
+    - name: credit
+      label: Photographer credit
+      type: string
+      required: true
+  - name: body
+    label: Additional notes
+    type: rich-text
+  operations:
+    rename: false
+- name: astrophotography
+  label: Astrophotography Showcase
+  type: collection
+  path: content/astrophotography
+  format: yaml-frontmatter
+  filename:
+    template: '{primary}.md'
+    field: create
+  fields:
+  - name: title
+    label: Target / image title
+    type: string
+    required: true
+  - name: draft
+    label: Keep as draft (not public)
+    type: boolean
+    default: true
+  - name: image
+    label: Processed web image (not FITS)
+    type: image
+    required: true
+  - name: alt
+    label: Image alt text
+    type: text
+    required: true
+  - name: photographer
+    label: Photographer / contributor
+    type: string
+    required: true
+  - name: permission_to_publish
+    label: Publication permission confirmed
+    type: boolean
+    default: false
+  - name: capture_date
+    label: Date captured (optional)
+    type: date
+    default: ''
+    options:
+      format: yyyy-MM-dd
+  - name: telescope
+    type: string
+  - name: camera
+    type: string
+  - name: filters
+    type: string
+  - name: exposure
+    type: string
+  - name: caption
+    type: text
+  - name: body
+    type: rich-text
+  operations:
+    rename: false
+- name: drive_gallery
+  label: Drive Gallery Settings
+  type: file
+  path: data/drive_gallery.yml
+  format: yaml
+  operations:
+    delete: false
+  fields:
+  - name: enabled
+    label: Import photos automatically (connect the GitHub secret first)
+    type: boolean
+    default: false
+  - name: folder_id
+    label: Google Drive folder ID
+    type: string
+    required: true
+  - name: use_snapshot
+    label: Show the initial imported photos when live sync is off
+    type: boolean
+    default: true
+  - name: photos
+    label: Optional photo corrections (leave empty to use filenames)
+    type: object
+    list: true
+    fields:
+    - name: filename
+      label: Exact Drive filename, including .jpg / .png / .webp
+      type: string
+      required: true
+    - name: title
+      label: Target title (optional)
+      type: string
+    - name: photographer
+      label: Photographer credit (optional)
+      type: string
+    - name: alt
+      label: Image description (recommended)
+      type: text
+    - name: caption
+      label: Caption (optional)
+      type: text
+    - name: hidden
+      label: Hide this photo from the website
+      type: boolean
+      default: false
+- name: announcements
+  label: News and Announcements
+  type: collection
+  path: content/announcements
+  format: yaml-frontmatter
+  filename:
+    template: '{primary}.md'
+    field: create
+  fields:
+  - name: title
+    type: string
+    required: true
+  - name: draft
+    label: Keep as draft (not public)
+    type: boolean
+    default: true
+  - name: featured
+    label: Feature on homepage
+    type: boolean
+    default: false
+  - name: publish_date
+    type: date
+    required: true
+    options:
+      format: yyyy-MM-dd
+  - name: summary
+    type: text
+    required: true
+  - name: image
+    type: image
+  - name: image_alt
+    type: text
+  - name: body
+    type: rich-text
+    options:
+      format: markdown
+  operations:
+    rename: false
+- name: officers
+  label: Club Officers
+  type: collection
+  path: content/officers
+  format: yaml-frontmatter
+  filename:
+    template: '{primary}.md'
+    field: create
+  fields:
+  - name: title
+    label: Name
+    type: string
+    required: true
+  - name: role
+    type: string
+    required: true
+  - name: display_order
+    type: number
+    default: 100
+  - name: active
+    label: Currently serving
+    type: boolean
+    default: true
+  - name: draft
+    label: Keep as draft (not public)
+    type: boolean
+    default: true
+  - name: image
+    type: image
+  - name: image_alt
+    type: text
+  - name: public_contact
+    label: Approved public contact (optional)
+    type: string
+  - name: body
+    label: Short biography
+    type: rich-text
+  operations:
+    rename: false
+- name: officers_page
+  label: Officer Page Settings
+  type: file
+  path: content/officers/_index.md
+  format: yaml-frontmatter
+  fields:
+  - name: title
+    type: string
+    required: true
+  - name: term
+    label: Academic year
+    type: string
+  - name: body
+    label: Introduction
+    type: rich-text
+- name: sponsors
+  label: Sponsors and Partners
+  type: collection
+  path: content/sponsors
+  format: yaml-frontmatter
+  filename:
+    template: '{primary}.md'
+    field: create
+  fields:
+  - name: title
+    label: Sponsor name
+    type: string
+    required: true
+  - name: draft
+    label: Keep as draft (not public)
+    type: boolean
+    default: true
+  - name: logo
+    type: image
+  - name: logo_alt
+    type: text
+  - name: website
+    type: string
+  - name: display_order
+    type: number
+    default: 100
+  - name: body
+    type: rich-text
+  operations:
+    rename: false
+- name: home
+  label: Homepage Settings
+  type: file
+  path: data/home.yml
+  format: yaml
+  operations:
+    delete: false
+  fields:
+  - name: eyebrow
+    label: Small text above the title
+    type: string
+  - name: headline
+    label: Hero headline
+    type: string
+  - name: introduction
+    label: Short homepage description
+    type: text
+  - name: hero_image
+    label: Override default Bell Tower image (optional)
+    type: image
+  - name: hero_image_alt
+    label: Hero image description
+    type: text
+  - name: show_announcements
+    label: Show announcements section
+    type: boolean
+    default: true
+  - name: show_gallery
+    label: Show the gallery carousel
+    type: boolean
+    default: true
+  - name: primary_cta
+    label: Events button text
+    type: string
+  - name: secondary_cta
+    label: About button text
+    type: string
+  - name: hero_credit
+    label: Credit for replacement hero image
+    type: string
+- name: site
+  label: Contact and Social Links
+  type: file
+  path: data/site.yml
+  format: yaml
+  operations:
+    delete: false
+  fields:
+  - name: public_email
+    label: Public contact email
+    type: string
+  - name: instagram
+    label: Instagram URL
+    type: string
+  - name: discord
+    label: Public Discord invitation URL (if approved)
+    type: string
+  - name: github
+    label: Public club GitHub URL (if approved)
+    type: string
+  - name: footer_text
+    label: Footer description
+    type: text
+- name: about
+  label: About the Club
+  type: file
+  path: content/about.md
+  format: yaml-frontmatter
+  operations:
+    delete: false
+  fields:
+  - name: title
+    type: string
+    default: About
+  - name: body
+    type: rich-text
+- name: contact
+  label: Contact Page
+  type: file
+  path: content/contact.md
+  format: yaml-frontmatter
+  operations:
+    delete: false
+  fields:
+  - name: title
+    type: string
+    default: Contact
+  - name: body
+    type: rich-text
+settings:
+  commit:
+    identity: app
+    templates:
+      create: 'content: create {path}'
+      update: 'content: update {path}'
+      delete: 'content: delete {path}'
+      rename: 'content: rename {oldPath} to {newPath}'
+actions:
+- name: generate-month-calendar
+  label: Generate Monthly Calendar Graphic
+  workflow: export-calendar.yml
+  ref: current
+  confirm:
+    title: Export a monthly calendar?
+    message: Creates downloadable PNG and PDF artifacts from published events.
+    button: Generate calendar
+  fields:
+  - name: month
+    label: Month (YYYY-MM)
+    type: text
+    required: true

@@ -1,0 +1,20 @@
+<div class="gallery-carousel" data-gallery-carousel role="region" aria-roledescription="carousel" aria-labelledby="home-gallery-title">
+  <div class="carousel-controls" data-carousel-controls hidden>
+    <span class="carousel-position" data-carousel-position aria-hidden="true"></span>
+    <div class="carousel-arrows">
+      <button type="button" data-carousel-previous aria-label="Previous photo" aria-controls="home-gallery-track"><span aria-hidden="true">←</span></button>
+      <button type="button" data-carousel-next aria-label="Next photo" aria-controls="home-gallery-track"><span aria-hidden="true">→</span></button>
+    </div>
+  </div>
+  <p id="home-gallery-help" class="sr-only">Browse gallery photos with the left and right arrow keys, or swipe. Open a photo to see its gallery page.</p>
+  <div class="carousel-track" id="home-gallery-track" tabindex="0" aria-label="Gallery photos" aria-describedby="home-gallery-help">
+    {{ range $index, $photo := . }}
+    <article class="gallery-card carousel-slide" role="group" aria-roledescription="slide" aria-label="Photo {{ add $index 1 }} of {{ len $ }}">
+      <a href="{{ .url }}">{{ partial "optimized-image.html" (dict "src" .image "alt" .alt "sizes" "(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 50vw, 33vw") }}
+        <div class="gallery-caption"><span class="eyebrow">{{ .label }}</span><h3>{{ .title }} <span aria-hidden="true">↗</span></h3>{{ with .credit }}<p>Image by {{ . }}</p>{{ end }}</div>
+      </a>
+    </article>
+    {{ end }}
+  </div>
+  <p class="sr-only" role="status" aria-live="polite" aria-atomic="true" data-carousel-announcement></p>
+</div>

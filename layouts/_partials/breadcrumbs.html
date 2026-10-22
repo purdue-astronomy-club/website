@@ -1,0 +1,1 @@
+<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span>{{ if and .Section (not .IsSection) }}<a href="/{{ .Section }}/">{{ .Section | humanize }}</a><span aria-hidden="true">/</span>{{ end }}<span aria-current="page">{{ .Title }}</span></nav>

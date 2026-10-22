@@ -1,0 +1,33 @@
+name: Check proposed content and website
+on:
+  pull_request:
+permissions:
+  contents: read
+env:
+  TZ: America/Indiana/Indianapolis
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - run: pip install -r requirements-ci.txt
+      - run: bash scripts/install-hugo.sh
+      - run: python -m unittest discover -s tests -v
+      - run: python scripts/build.py
+        env:
+          PAC_OFFLINE: "1"
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium firefox
+      - run: npm run test:browser
+      - uses: actions/upload-artifact@v7.0.2
+        if: failure()
+        with:
+          name: browser-test-results
+          path: test-results

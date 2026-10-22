@@ -1,0 +1,5 @@
+{{ $home := hugo.Data.home }}{{ $image := (resources.Get "images/hero-bell-tower.webp").RelPermalink }}{{ with $home.hero_image }}{{ $image = . }}{{ end }}
+<section class="hero" aria-labelledby="hero-title">
+{{ partial "optimized-image.html" (dict "src" $image "alt" $home.hero_image_alt "class" "hero-image" "loading" "eager" "sizes" "100vw") }}
+<div class="hero-shade"></div><div class="container hero-content">{{ with $home.eyebrow }}<p class="eyebrow">{{ . }}</p>{{ end }}<h1 id="hero-title">{{ if eq $home.headline "Purdue Astronomy Club" }}Purdue<br>Astronomy Club{{ else }}{{ $home.headline }}{{ end }}</h1><p class="hero-intro">{{ $home.introduction }}</p><div class="button-row"><a class="button" href="/events/">{{ $home.primary_cta | default "Upcoming Events" }} <span aria-hidden="true">→</span></a><a class="button button-outline" href="/about/">{{ $home.secondary_cta | default "About Our Club" }}</a></div></div>
+<div class="hero-note">{{ if $home.hero_image }}{{ $home.hero_credit | default "Club image" }}{{ else }}Purdue Bell Tower · Illustrated night sky{{ end }}</div></section>

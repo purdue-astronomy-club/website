@@ -1,0 +1,23 @@
+/public/
+/resources/
+/data/generated/
+/static/media/
+/static/uploads/drive-gallery/
+# Google keys must never enter the public repository or delivery ZIP.
+*service-account*.json
+gha-creds-*.json
+/static/events.json
+/static/months.json
+/static/calendar.ics
+/static/events/*/
+/static/astronomy/*/
+/.generated/
+.hugo_build.lock
+.venv/
+node_modules/
+test-results/
+playwright-report/
+__pycache__/
+*.pyc
+.DS_Store
+/calendar-exports/

@@ -1,0 +1,6 @@
+{{ define "main" }}
+{{ partial "calendar.html" . }}
+<section class="container section" id="all-events"><div class="section-heading"><div><p class="eyebrow">Find your next night out</p><h2>Upcoming Club Events</h2></div></div>
+{{ $events := where hugo.Data.generated.events "upcoming" true }}{{ if $events }}<div class="event-grid">{{ range $events }}{{ partial "event-card.html" . }}{{ end }}</div>{{ else }}{{ partial "empty-state.html" (dict "title" "No events announced yet." "text" "As soon as the next gathering is confirmed, you’ll find its date, time, and location here.") }}{{ end }}
+{{ $others := where (where hugo.Data.generated.events "calendarType" "ne" "astronomy") "upcoming" false }}{{ if $others }}<h2 class="archive-heading">Past Events & Schedule Updates</h2><div class="event-grid">{{ range sort $others "start" "desc" }}{{ partial "event-card.html" . }}{{ end }}</div>{{ end }}</section>
+{{ end }}
