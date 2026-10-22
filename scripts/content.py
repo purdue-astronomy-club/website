@@ -111,7 +111,6 @@ def normalize(record, section, slug, now=None):
         clock_label = start.strftime('%I:%M %p').lstrip('0')
         if record.get('end_time'):
             clock_label += ' – ' + end.strftime('%I:%M %p').lstrip('0')
-        clock_label += ' · Indiana time'
     ctype = 'astronomy' if section == 'astronomy' else record.get('calendar_type', 'pac')
     status = record.get('status', 'scheduled')
     if ctype not in TYPES:

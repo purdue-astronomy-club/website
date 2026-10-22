@@ -34,7 +34,7 @@ def instant_record(title, kind, moment, identity, summary, checked, planet=''):
     # The UTC-derived instant is unambiguous even during the repeated DST hour.
     end=(local.astimezone(timezone.utc)+timedelta(minutes=1)).astimezone(TZ)
     item.update(allDay=False,start=local.isoformat(timespec='seconds'),end=end.isoformat(timespec='seconds'),
-                timeLabel=local.strftime('%I:%M %p').lstrip('0')+' · Indiana time (calculated)',
+                timeLabel=local.strftime('%I:%M %p').lstrip('0')+' (calculated)',
                 upcoming=False, origin='calculated',planet=planet,
                 icon=planet.lower() if planet else ICONS[kind], instant=True)
     return item

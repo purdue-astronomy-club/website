@@ -40,7 +40,7 @@ test('keyboard menu',async({page})=>{
  await expect(menu).toBeFocused();await expect(menu).toHaveAttribute('aria-expanded','false');
 });
 test('month calendar keeps category filters without an agenda',async({page})=>{
- const entries=Array.from({length:5},(_,i)=>({id:'events/test-'+i,title:'Test fixture '+i,summary:'Test only',start:'2026-10-22T19:00:00-04:00',end:'2026-10-22T20:00:00-04:00',startDate:'2026-10-22',endDate:'2026-10-22',allDay:false,url:'/events/test-'+i+'/',calendarType:i===0?'joint':'pac',categoryLabel:i===0?'Joint event':'PAC event',timeLabel:'7:00 PM · Indiana time',status:'scheduled',location:'Fixture location'}));
+ const entries=Array.from({length:5},(_,i)=>({id:'events/test-'+i,title:'Test fixture '+i,summary:'Test only',start:'2026-10-22T19:00:00-04:00',end:'2026-10-22T20:00:00-04:00',startDate:'2026-10-22',endDate:'2026-10-22',allDay:false,url:'/events/test-'+i+'/',calendarType:i===0?'joint':'pac',categoryLabel:i===0?'Joint event':'PAC event',timeLabel:'7:00 PM',status:'scheduled',location:'Fixture location'}));
  await page.route('**/events.json',r=>r.fulfill({json:entries}));
  await page.goto('/events/?month=2026-10');await page.waitForFunction(()=>window.calendarReady);
  await expect(page.locator('.fc-daygrid-more-link')).toBeVisible();
