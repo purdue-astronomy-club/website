@@ -12,10 +12,10 @@
 <meta property="og:url" content="{{ .Permalink }}">
 {{ $hero := resources.Get "images/hero-bell-tower.webp" }}
 {{ $ogImage := $hero.Permalink }}{{ $ogAlt := "Illustration of the Purdue Bell Tower beneath a star-filled sky" }}
-{{ if .IsHome }}{{ with hugo.Data.home.hero_image }}{{ $ogImage = . | absURL }}{{ $ogAlt = hugo.Data.home.hero_image_alt }}{{ end }}{{ else }}{{ with .Params.image | default .Params.cover_image }}{{ $ogImage = . | absURL }}{{ $ogAlt = $.Params.alt | default $.Params.image_alt | default $.Params.cover_alt }}{{ end }}{{ end }}
+{{ if .IsHome }}{{ with hugo.Data.home.hero_image }}{{ $ogImage = (partial "site-url.html" .) | absURL }}{{ $ogAlt = hugo.Data.home.hero_image_alt }}{{ end }}{{ else }}{{ with .Params.image | default .Params.cover_image }}{{ $ogImage = (partial "site-url.html" .) | absURL }}{{ $ogAlt = $.Params.alt | default $.Params.image_alt | default $.Params.cover_alt }}{{ end }}{{ end }}
 <meta property="og:image" content="{{ $ogImage }}">
 <meta property="og:image:alt" content="{{ $ogAlt }}">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="alternate" type="text/calendar" title="Purdue Astronomy Club calendar" href="/calendar.ics">
+<link rel="icon" href="{{ relURL "favicon.svg" }}" type="image/svg+xml">
+<link rel="alternate" type="text/calendar" title="Purdue Astronomy Club calendar" href="{{ relURL "calendar.ics" }}">
 {{ $css := resources.Get "css/main.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">

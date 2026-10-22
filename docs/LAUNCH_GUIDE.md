@@ -48,7 +48,7 @@ Open [repository Pages settings](https://github.com/purdue-astronomy-club/websit
 1. Choose **Settings → Pages → Build and deployment → Source → GitHub Actions**.
 2. Open the repository’s **Actions** tab. Allow Actions if GitHub asks. The “Build and deploy website” workflow runs on pushes to `main`, and can also be started with **Run workflow**.
 3. Wait for the build and deployment jobs to be green. If the initial run started before Pages was enabled, rerun it from Actions.
-4. Leave the production configuration’s `baseURL` as `https://purdueastro.club/`. Asset paths are designed for the custom domain; the temporary `/website/` project URL is not the final acceptance target.
+4. The workflow reads the actual address from GitHub Pages and builds for it automatically. Before adding a custom domain, test **https://purdue-astronomy-club.github.io/website/**. Styles, photos, navigation and the calendar support this project path. Leave the local default `baseURL` as `https://purdueastro.club/`; the workflow overrides it using the Pages setting.
 
 The automatic sky calendar needs no API keys or extra Porkbun settings. Scheduled builds calculate phases/oppositions/seasons locally, refresh public AMS meteor forecasts at most once per UTC day, and cache the last good forecasts. GitHub supplies a short-lived deployment token. Python and the pinned Hugo version are installed by the workflow. Builds run every six hours at 00:17, 06:17, 12:17 and 18:17 UTC, refreshing announcements, upcoming events and the optional Drive gallery. The ten initial Drive photos are already included and display without a credential. Automatic Drive refreshing needs one additional Google credential secret, described in [DRIVE_GALLERY_SETUP.md](DRIVE_GALLERY_SETUP.md); it starts disabled so the site and gallery build before that connection is configured.
 
@@ -106,6 +106,8 @@ The apex query should return the four GitHub A records. The `www` query should r
 ## 7. Turn on HTTPS
 
 Return to **repository → Settings → Pages**. Wait for GitHub’s DNS check and certificate provisioning to finish, then enable **Enforce HTTPS**. If the control is temporarily unavailable, wait and check for conflicting A/AAAA/CNAME records before changing settings repeatedly.
+
+After saving the custom domain and completing DNS/HTTPS, open **Actions → Build and deploy website → Run workflow → main**. This rebuilds links and assets for the new domain instead of the previous `/website/` address. Do this again whenever the Pages address changes.
 
 Open both `https://purdueastro.club/` and `https://www.purdueastro.club/`. Confirm the second redirects to the first and both have valid certificates. Check images, styles, navigation, `/events/`, and `/calendar.ics`. The existing Coming Soon page should be gone.
 

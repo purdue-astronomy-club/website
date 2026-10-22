@@ -1,7 +1,7 @@
 <header class="site-header"><div class="container header-inner">
-<a class="brand" href="/" aria-label="Purdue Astronomy Club home"><span class="brand-mark">{{ partial "icon.html" "telescope" }}</span><span>Purdue Astronomy Club</span></a>
+<a class="brand" href="{{ relURL "" }}" aria-label="Purdue Astronomy Club home"><span class="brand-mark">{{ partial "icon.html" "telescope" }}</span><span>Purdue Astronomy Club</span></a>
 <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" hidden>Menu <span aria-hidden="true">☰</span></button>
 <nav id="main-nav" aria-label="Main navigation">
 {{ $current := . }}{{ range slice "About" "Events" "Gallery" "Officers" "Contact" }}{{ $url := printf "/%s/" (lower .) }}
-<a href="{{ $url }}"{{ if eq $current.RelPermalink $url }} aria-current="page"{{ end }}>{{ . }}</a>{{ end }}
+<a href="{{ partial "site-url.html" $url }}"{{ if eq $current.RelPermalink (partial "site-url.html" $url) }} aria-current="page"{{ end }}>{{ . }}</a>{{ end }}
 </nav></div></header>

@@ -7,13 +7,14 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 import yaml
 from PIL import Image
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from content import ROOT
 from build_calendar import generate
 from optimize_images import optimize
-from validate_public_output import validate
+from validate_public_output import validate, Links
 
 class IntegrationTests(unittest.TestCase):
     def test_publish_all_models_then_move_cancel_and_draft_event(self):
@@ -27,7 +28,7 @@ class IntegrationTests(unittest.TestCase):
             shutil.copy(ROOT/'hugo.yaml',root/'hugo.yaml')
             (root/'data/astronomy.yml').write_text('enabled: false\n')
             def write(section,slug,record):
-                (root/'content'/section/f'{slug}.md').write_text('---\n'+yaml.safe_dump(record)+'---\nFixture rich text body.'+('\n\n![Fixture inline photo](/uploads/fixture-0.jpg)' if section=='announcements' else ''))
+                (root/'content'/section/f'{slug}.md').write_text('---\n'+yaml.safe_dump(record)+'---\nFixture rich text body.'+('\n\n![Fixture inline photo](/uploads/fixture-0.jpg)\n\n[Fixture link](/photo-prep/)' if section=='announcements' else ''))
             photos=[]
             for i in range(3):
                 image=f'/uploads/fixture-{i}.jpg'
@@ -67,6 +68,28 @@ class IntegrationTests(unittest.TestCase):
             self.assertIn('alt="Fixture image 2"',profile)
             self.assertIn('Test role',profile)
             self.assertIn('Meet all officers',profile)
+            # Reproduce a repository hosted below /website/, where root-relative
+            # CSS, media, links, browser feeds and invitations used to break.
+            with patch.dict(os.environ, {'HUGO_BASEURL':'https://example.github.io/website/'}):
+                build()
+                parser=Links();parser.feed((root/'public/index.html').read_text())
+                self.assertTrue(any(url.startswith('/website/css/') for url in parser.links))
+                self.assertTrue(any(url.startswith('/website/media/') for url in parser.links))
+                self.assertIn('/website/events/',parser.links)
+                records=json.loads((root/'public/events.json').read_text())
+                self.assertEqual(records[0]['url'],'/website/events/fixture-event/')
+                self.assertEqual(records[0]['coverImage'],'/website/uploads/fixture-0.jpg')
+                self.assertIn('https://example.github.io/website/events/fixture-event/',(root/'public/calendar.ics').read_text())
+                news=Links();news.feed((root/'public/announcements/fixture-news/index.html').read_text())
+                self.assertIn('/website/photo-prep/',news.links)
+                redirect=(root/'public/calendar/index.html').read_text()
+                self.assertIn('/website/events/',redirect)
+                # A file existing at the output root must not hide a broken URL
+                # that points outside the actual deployed repository path.
+                (root/'public/broken.html').write_text('<img src="/favicon.svg">')
+                with self.assertRaisesRegex(ValueError,'escapes the website deployment path'):
+                    validate(root/'public')
+                (root/'public/broken.html').unlink()
             event['start_date']='2040-11-23';write('events','fixture-event',event);build()
             self.assertIn('2040-11-23',(root/'public/events.json').read_text())
             self.assertNotIn('20401022',(root/'public/calendar.ics').read_text())

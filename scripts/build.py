@@ -9,6 +9,7 @@ from refresh_meteors import refresh
 from optimize_images import optimize
 from sync_drive_gallery import sync
 from validate_public_output import validate
+from site_config import base_url
 
 os.chdir(ROOT)
 sync()
@@ -17,7 +18,7 @@ if config.get('enabled') and config.get('meteor_showers',True) and not os.enviro
     refresh()
 generate()
 optimize()
-subprocess.run([os.environ.get('HUGO_BIN', 'hugo'), '--gc', '--minify', '--cleanDestinationDir'], check=True)
+subprocess.run([os.environ.get('HUGO_BIN', 'hugo'), '--gc', '--minify', '--cleanDestinationDir', '--baseURL', base_url()], check=True)
 if (ROOT/'.generated/uploads').exists():
     shutil.copytree(ROOT/'.generated/uploads', ROOT/'public/uploads', dirs_exist_ok=True)
 validate(ROOT/'public')

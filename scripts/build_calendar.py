@@ -4,7 +4,8 @@ from pathlib import Path
 import json
 import shutil
 from icalendar import Calendar, Event
-from content import ROOT, BASE, collect
+from content import ROOT, collect
+from site_config import absolute_url, site_path
 from automatic_sky import automatic_events
 
 
@@ -27,9 +28,9 @@ def calendar_bytes(events, records_root=ROOT):
         if r['status'] in {'cancelled', 'postponed', 'tentative'}:
             title = r['status'].title() + ': ' + title
         e.add('summary', title)
-        e.add('description', r['summary'] + '\n' + BASE + r['url'])
+        e.add('description', r['summary'] + '\n' + absolute_url(r['url'], records_root))
         e.add('location', r['location'])
-        e.add('url', BASE + r['url'])
+        e.add('url', absolute_url(r['url'], records_root))
         parse = date.fromisoformat if r['allDay'] else datetime.fromisoformat
         start, end = parse(r['start']), parse(r['end'])
         if not r['allDay']:
@@ -51,7 +52,8 @@ def generate(root=ROOT):
     generated.mkdir(parents=True, exist_ok=True)
     (generated/'sky.json').write_text(json.dumps(status))
     (generated/'events.json').write_text(json.dumps(events, indent=2, ensure_ascii=False))
-    (root/'static/events.json').write_text(json.dumps(events, ensure_ascii=False))
+    public_events = [{**e, 'url': site_path(e['url'], root), 'coverImage': site_path(e['coverImage'], root)} for e in events]
+    (root/'static/events.json').write_text(json.dumps(public_events, ensure_ascii=False))
     for section in ['events', 'astronomy']:
         shutil.rmtree(root/'static'/section, ignore_errors=True)
     (root/'static/calendar.ics').write_bytes(calendar_bytes(events, root))
@@ -62,6 +64,8 @@ def generate(root=ROOT):
     safe_months = []
     for m in months:
         n = dict(m)
+        if n.get('banner_image'):
+            n['banner_image'] = site_path(n['banner_image'], root)
         if not (n.get('permission_to_publish') and n.get('banner_image')):
             for key in ['banner_image', 'banner_alt', 'photographer']:
                 n.pop(key, None)

@@ -10,7 +10,7 @@
   <div class="carousel-track" id="home-gallery-track" tabindex="0" aria-label="Gallery photos" aria-describedby="home-gallery-help">
     {{ range $index, $photo := . }}
     <article class="gallery-card carousel-slide" role="group" aria-roledescription="slide" aria-label="Photo {{ add $index 1 }} of {{ len $ }}">
-      <a href="{{ .url }}">{{ partial "optimized-image.html" (dict "src" .image "alt" .alt "sizes" "(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 50vw, 33vw") }}
+      <a href="{{ partial "site-url.html" .url }}">{{ partial "optimized-image.html" (dict "src" .image "alt" .alt "sizes" "(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 50vw, 33vw") }}
         <div class="gallery-caption"><span class="eyebrow">{{ .label }}</span><h3>{{ .title }} <span aria-hidden="true">↗</span></h3>{{ with .credit }}<p>Image by {{ . }}</p>{{ end }}</div>
       </a>
     </article>

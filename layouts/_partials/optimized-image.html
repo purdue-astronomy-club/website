@@ -1,2 +1,4 @@
 {{ $meta := index hugo.Data.generated.images .src }}
-<img src="{{ if $meta }}{{ $meta.src }}{{ else }}{{ .src }}{{ end }}" alt="{{ .alt }}"{{ with .class }} class="{{ . }}"{{ end }}{{ if $meta }} srcset="{{ $meta.srcset }}" sizes="{{ .sizes | default "(max-width: 767px) 100vw, 50vw" }}" width="{{ $meta.width }}" height="{{ $meta.height }}"{{ else }} width="1920" height="900"{{ end }} loading="{{ .loading | default "lazy" }}" decoding="async">
+{{ $srcset := slice }}
+{{ if $meta }}{{ range split $meta.srcset "," }}{{ $parts := split (strings.TrimSpace .) " " }}{{ $srcset = $srcset | append (printf "%s %s" (partial "site-url.html" (index $parts 0)) (index $parts 1)) }}{{ end }}{{ end }}
+<img src="{{ if $meta }}{{ partial "site-url.html" $meta.src }}{{ else }}{{ partial "site-url.html" .src }}{{ end }}" alt="{{ .alt }}"{{ with .class }} class="{{ . }}"{{ end }}{{ if $meta }} srcset="{{ delimit $srcset ", " }}" sizes="{{ .sizes | default "(max-width: 767px) 100vw, 50vw" }}" width="{{ $meta.width }}" height="{{ $meta.height }}"{{ else }} width="1920" height="900"{{ end }} loading="{{ .loading | default "lazy" }}" decoding="async">

@@ -3,8 +3,9 @@
   const root = document.querySelector('[data-calendar-page]');
   if (!root || !window.FullCalendar) return;
   const status = document.querySelector('#calendar-status');
+  const base = document.documentElement.dataset.siteRoot || '/';
   try {
-    const [eventResponse, monthResponse] = await Promise.all([fetch('/events.json'), fetch('/months.json')]);
+    const [eventResponse, monthResponse] = await Promise.all([fetch(base + 'events.json'), fetch(base + 'months.json')]);
     if (!eventResponse.ok || !monthResponse.ok) throw new Error('Calendar data unavailable');
     const [records, months] = await Promise.all([eventResponse.json(), monthResponse.json()]);
     const today = () => new Intl.DateTimeFormat('en-CA', {timeZone:'America/Indiana/Indianapolis',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
@@ -22,7 +23,7 @@
       const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
       svg.setAttribute('class','celestial-icon'); svg.setAttribute('aria-hidden','true'); svg.setAttribute('focusable','false');
       const use=document.createElementNS('http://www.w3.org/2000/svg','use');
-      use.setAttribute('href','/icons/sky.svg#'+(icons.has(r.icon)?r.icon:'star')); svg.append(use); return svg;
+      use.setAttribute('href',base+'icons/sky.svg#'+(icons.has(r.icon)?r.icon:'star')); svg.append(use); return svg;
     };
 
     const fmt = new Intl.DateTimeFormat('en-US', {month:'long',year:'numeric',timeZone:'UTC'});

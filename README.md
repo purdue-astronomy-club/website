@@ -81,8 +81,10 @@ Hugo’s frontmatter configuration maps `publish_date` to PublishDate, so future
 
 ## Deployment and export
 
-`.github/workflows/hugo-pages.yml` validates, tests, builds and deploys on pushes to `main`, manual runs, and every six hours at 00:17, 06:17, 12:17 and 18:17 UTC. AMS refresh remains limited to once per UTC day. Pull requests get offline content/build and browser checks. The deploy job alone has Pages-write and OIDC permissions; the production build alone receives the optional Drive secret.
+`.github/workflows/hugo-pages.yml` reads the actual GitHub Pages address with `actions/configure-pages`, validates, tests, builds and deploys on pushes to `main`, manual runs, and every six hours at 00:17, 06:17, 12:17 and 18:17 UTC. AMS refresh remains limited to once per UTC day. Pull requests get offline content/build and browser checks. The deploy job alone has Pages-write and OIDC permissions; the production build alone receives the optional Drive secret.
 
 `export-calendar.yml` accepts a Pages CMS `payload` string, reads its `inputs.month` as data, validates the month, and exports the shared poster route to 1920×1080 PNG and A3 landscape PDF artifacts. It does not commit graphics or expose a public workflow trigger. Dense months fail rather than silently crop. Local export after building/serving: `node scripts/export-calendar.mjs 2026-10`.
+
+GitHub Pages project hosting at `https://purdue-astronomy-club.github.io/website/` works before the custom domain is ready. `HUGO_BASEURL` controls generated assets, page links, calendar JSON/icons, redirects and invitation URLs; Actions obtains it from the Pages setting. After changing the Pages custom domain, run the complete build workflow again so all generated paths match the new address. For a manual project-path build, run `HUGO_BASEURL=https://purdue-astronomy-club.github.io/website/ python scripts/build.py` and serve the resulting output at `/website/`. The normal local preview uses the root-path default.
 
 Initial account setup, live CMS saves/uploads, GitHub Actions, domain verification and HTTPS must be completed by an owner with the necessary access. Those are documented, not claimed as completed.

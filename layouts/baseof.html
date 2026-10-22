@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-US">
+<html lang="en-US" data-site-root="{{ relURL "" }}">
 <head>{{ partial "head.html" . }}</head>
 <body class="{{ if .IsHome }}home{{ else }}inner-page{{ end }} {{ .Type }}">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -9,7 +9,7 @@
 {{ $js := resources.Get "js/site.js" | minify | fingerprint }}<script src="{{ $js.RelPermalink }}" defer></script>
 {{ if .IsHome }}{{ $carousel := resources.Get "js/gallery-carousel.js" | minify | fingerprint }}<script src="{{ $carousel.RelPermalink }}" defer></script>{{ end }}
 {{ if or (eq .Section "events") (eq .Layout "poster") }}
-<script src="/vendor/fullcalendar-6.1.20.min.js" defer></script>
+<script src="{{ relURL "vendor/fullcalendar-6.1.20.min.js" }}" defer></script>
 {{ $calendar := resources.Get "js/calendar.js" | minify | fingerprint }}<script src="{{ $calendar.RelPermalink }}" defer></script>
 {{ end }}
 </body>

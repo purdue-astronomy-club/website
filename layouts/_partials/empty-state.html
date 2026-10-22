@@ -1,1 +1,1 @@
-<div class="empty-state"><span class="empty-star" aria-hidden="true">✧</span><h3>{{ .title }}</h3><p>{{ .text }}</p>{{ with .url }}<a class="text-link" href="{{ . }}">{{ $.label }} <span aria-hidden="true">→</span></a>{{ end }}</div>
+<div class="empty-state"><span class="empty-star" aria-hidden="true">✧</span><h3>{{ .title }}</h3><p>{{ .text }}</p>{{ with .url }}<a class="text-link" href="{{ partial "site-url.html" . }}">{{ $.label }} <span aria-hidden="true">→</span></a>{{ end }}</div>

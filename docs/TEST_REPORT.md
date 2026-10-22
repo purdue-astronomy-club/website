@@ -2,7 +2,7 @@
 
 **Date:** October 22, 2026. **Production target:** https://purdueastro.club/. **Local source:** `/home/sam/website`. **Repository configured:** https://github.com/purdue-astronomy-club/website. **CMS:** https://app.pagescms.org/.
 
-The local website implementation is complete. Production deployment and authenticated CMS acceptance are pending owner access. No GitHub settings, DNS records, app permissions, or repository contents were changed remotely. The live domain still served an existing Coming Soon page when checked. The connected GitHub account reported read permission but no push/admin permission.
+The local website implementation is complete. The owner has uploaded the initial source (`45a2e1e`), and this update corrects rendering at the repository’s `/website/` address. The correction still needs to be pushed and deployed. Authenticated CMS acceptance and production-domain setup remain owner tasks. No GitHub settings, DNS records, app permissions, or repository contents were changed remotely by the assistant. Initial account/domain observations below predate the owner’s upload.
 
 ## Phase status
 
@@ -12,7 +12,7 @@ The local website implementation is complete. Production deployment and authenti
 | B — CMS | All collections/settings configured; CMS-shaped records validate/build; ordered three-photo fixture album verified | Actual GitHub sign-in, app installation, non-admin officer save/upload/reuse/replace/delete tests |
 | C — Calendar | Shared normalized records; filters, month/list, banners/notes, statuses, stable ICS, date/DST tests, no-JS agenda | Real calendar-app import/subscription check and CMS-to-live edit demonstration |
 | D — Content pages | Albums, astrophotography, announcements, eight 2026–27 officers with portraits, sponsors, About/Contact, empty states and photo prep | Officers supply further club event, news, sponsor and approved contact content |
-| E — Delivery | Actions workflows written; checksum-verified Hugo installer tested; generated link/media/draft/private-reference scan passes | Owner uploads source, enables Pages, verifies domain, sets DNS/custom domain/HTTPS, verifies Actions |
+| E — Delivery | Actions workflows written; checksum-verified Hugo installer tested; generated link/media/draft/private-reference scan passes | Owner pushes the deployment correction, verifies domain, sets DNS/custom domain/HTTPS, verifies Actions |
 | F — Handoff | Browser/accessibility/mobile tests, screenshots, officer/admin/recovery guides | Human screen-reader check and account-bound final acceptance |
 
 ## Automated checks actually run
@@ -22,11 +22,11 @@ The local website implementation is complete. Production deployment and authenti
 | `HUGO_BIN=/tmp/pac-tools/hugo .venv/bin/python scripts/build.py` | PASS; Hugo extended 0.168.0; no template/config deprecation warnings; 229 generated Hugo pages, including 185 automatic sky records, ten real photo details and eight officer profiles |
 | Generated output checks | PASS; 745 files/directories examined; no broken internal links/media or forbidden/draft references |
 | `HUGO_BIN=/tmp/pac-tools/hugo .venv/bin/python -m unittest discover -s tests -v` | PASS; 66 tests including the complete isolated multi-model Hugo and Drive gallery integration tests |
-| `npm run test:browser` | PASS; 53 passed, 1 intentionally skipped duplicate Firefox screenshot capture (52 behavior/accessibility checks plus one screenshot capture) |
+| `npm run test:browser` | PASS; 55 passed, 1 intentionally skipped duplicate Firefox screenshot capture (54 behavior/accessibility checks plus one screenshot capture) |
 | `bash scripts/install-hugo.sh` | PASS; official pinned release downloaded and SHA-256 verified |
 | `node scripts/export-calendar.mjs 2026-10` | PASS; 1920×1080 PNG and one-page A3 landscape PDF; rendered PDF inspected |
 | `node scripts/export-calendar.mjs 2026-08` | PASS; six-week month PNG and one-page A3 landscape PDF |
-| Source delivery ZIP | PASS; 157 source files including ten real web photos, eight officer portraits/profiles and the homepage carousel, hidden CMS/workflow config included, CRC checked; a fresh extraction built and retained all ten gallery/carousel entries and eight officer profiles without Drive credentials |
+| Source delivery ZIP | PASS; 162 source files including ten real web photos, eight officer portraits/profiles, the homepage carousel and the deployment-path correction, hidden CMS/workflow config included, CRC checked; a fresh extraction built and retained all ten gallery/carousel entries and eight officer profiles without Drive credentials |
 | Invalid poster month | PASS; rejected with an explanatory YYYY-MM validation error |
 | Desktop/phone screenshot capture | PASS; 1440 px desktop and 390 px phone reference images saved |
 
@@ -52,7 +52,7 @@ The supplied Drive folder (`1ovIgPYF6oufpNY4W8Q5RCMW9IeUFvaXR`) was inspected th
 
 Eighteen new tests cover filename-derived target/credit, catalog identifiers and intended capitalization, metadata-free oriented images, cache reuse, stable addresses across renames, source removals, separate pages for duplicate filenames, CMS corrections/hidden photos, invalid/unsupported files, limits/download denial/corrupt images, disabled/offline modes, missing credentials, safe authentication endpoints, scoped shared-drive pagination, incomplete listing rejection, and preserving the last complete snapshot on errors. A full-size original test accepts a JPEG payload over 15 MB and reduces its 3,600-pixel width to 2,400 before the existing image pipeline. The real isolated Hugo gallery test verifies the target, photographer credit and lightbox credit, checks links/media, then removes the source photo and confirms its page/gallery entry disappear. Fixture photos never enter production content.
 
-All 66 Python tests passed. All 53 browser checks passed with one intentional duplicate screenshot skip. The ten actual photos have now been downloaded through the authorized Drive connector, resized and stripped of embedded metadata, and included under `assets/drive-gallery-snapshot`. The original files were unchanged and were not committed. Their combined web-copy size is 3,589,290 bytes. The largest original (Cygnus Loop) is 12,262 × 8,183 pixels; all included copies are at most 2,400 pixels on the long edge. A clean build needs no Google credential and displays ten gallery cards/detail pages plus all ten images in the homepage carousel, all credited to Sam Guber. The pinned Python dependencies resolve to binary wheels for CI's Python 3.12, and the installed environment passes `pip check`. Live unattended authentication and production scheduling still require the owner's [Drive setup and acceptance steps](DRIVE_GALLERY_SETUP.md).
+All 66 Python tests passed. All 55 browser checks passed with one intentional duplicate screenshot skip. The ten actual photos have now been downloaded through the authorized Drive connector, resized and stripped of embedded metadata, and included under `assets/drive-gallery-snapshot`. The original files were unchanged and were not committed. Their combined web-copy size is 3,589,290 bytes. The largest original (Cygnus Loop) is 12,262 × 8,183 pixels; all included copies are at most 2,400 pixels on the long edge. A clean build needs no Google credential and displays ten gallery cards/detail pages plus all ten images in the homepage carousel, all credited to Sam Guber. The pinned Python dependencies resolve to binary wheels for CI's Python 3.12, and the installed environment passes `pip check`. Live unattended authentication and production scheduling still require the owner's [Drive setup and acceptance steps](DRIVE_GALLERY_SETUP.md).
 
 Four additional snapshot tests verify a fresh checkout without generated cache or credentials, CMS corrections/hidden photos, disabling the initial set and rejecting a different configured folder, and live-mode replacement/removals without resurrecting initial copies. A new browser test in Chromium and Firefox opens a real gallery card, verifies its target and credit, loads the photo on a phone-width layout, opens the larger view, checks its credit and closes it with keyboard focus restored. Desktop/mobile gallery screenshots were saved and inspected; the actual larger-photo view was also checked in the app browser.
 
@@ -73,6 +73,16 @@ Eight officer profiles and all eight portraits were imported from the club’s [
 Portraits were matched to the current source page’s named cards and stored locally as metadata-free WebP files under `static/uploads/officers` (905,074 bytes combined). They display without requesting Google Sites at runtime. The list has the academic year, ordered cards and links to full portrait/role/biography pages. Pages CMS **Club Officers** edits each person; **Officer Page Settings** edits the academic year and introduction. The existing integration test now also checks the officer detail portrait, role and return link. Desktop/mobile screenshots and the live local list/profile were inspected. All 66 Python tests and 53 browser checks passed (one intentional duplicate screenshot skip).
 
 ![2026–27 officer core](screenshots/officers-preview.jpg)
+
+## GitHub Pages project-path rendering correction
+
+The uploaded site built successfully but its repository deployment showed an unstyled page. The build had used root-domain paths while the requested address was `https://purdue-astronomy-club.github.io/website/`. The deployment workflow now reads the actual Pages address with `actions/configure-pages`, supplies `HUGO_BASEURL` to the complete build, and uses the same address for the HTML and calendar feeds/invitations. Templates now resolve navigation, CMS images and responsive sources, rich-text links, icons, subscriptions, larger-photo links and redirects beneath the deployment path. Hugo-generated resource and page permalinks retain their existing prefix. The production-domain default remains available for local root-path previews.
+
+The output validator now rejects internal URLs that escape a non-root deployment prefix, even if the target file happens to exist at the build-output root. The isolated integration test verifies a second build under `/website/`, including Markdown links, media, browser JSON, invitation URLs and the calendar redirect. A new browser regression builds a fresh isolated checkout and serves only `/website/`, returning 404 for accidental root requests. Chromium and Firefox verify loaded CSS, logo dimensions, photos, gallery larger views, officer profiles, calendar JSON/icons/details/invitations, redirects with month queries and phone layouts with no failed requests or browser errors. The regular root-path checks also pass. The final Python run passed all 66 tests; the browser suite passed all 55 checks after correcting a new test assertion to allow the calendar’s expected month query parameter (one intentional duplicate screenshot skip). The project-path homepage was also inspected in the app browser.
+
+This correction is saved locally and must be pushed to trigger the updated production build. After changing the GitHub Pages custom domain in future, run the full build again to update all generated paths. The live replacement is not claimed as verified before that push/deployment.
+
+![Verified project-path build](screenshots/project-home-desktop.jpg)
 
 ## Implemented routes
 
@@ -98,7 +108,7 @@ Portraits were matched to the current source page’s named cards and stored loc
 
 Collection detail routes exist after the corresponding verified content is published. Drafts do not create public routes. There are no fabricated officer names, sponsors, contacts, or astronomy dates. No real calendar dates were copied out of the poster reference.
 
-## Live setup observations
+## Initial setup observations before the owner’s upload
 
 - GitHub owner type: **User**, not Organization. Repository public and empty, no branches returned by `git ls-remote`.
 - Authoritative nameservers: `curitiba.ns.porkbun.com`, `fortaleza.ns.porkbun.com`, `maceio.ns.porkbun.com`, `salvador.ns.porkbun.com`.

@@ -4,7 +4,8 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 import os
 import re
-from content import ROOT, BASE, read_record
+from content import ROOT, read_record
+from site_config import base_url
 
 class Links(HTMLParser):
     def __init__(self):
@@ -19,6 +20,8 @@ class Links(HTMLParser):
 
 def validate(public=ROOT/'public'):
     errors = []
+    deployment = urlsplit(base_url(public.parent))
+    prefix = deployment.path
     banned = ['10.0.0.141', 'r410', 'authentik', 'copyparty', 'snipe-it', 'member dashboard']
     banned += [s.strip().lower() for s in os.environ.get('FORBIDDEN_PUBLIC_HOSTS', '').split(',') if s.strip()]
     draft_paths = []
@@ -39,7 +42,7 @@ def validate(public=ROOT/'public'):
         parser.feed(text)
         for link in parser.links:
             parsed = urlsplit(link)
-            if parsed.netloc == urlsplit(BASE).netloc:
+            if parsed.netloc == deployment.netloc:
                 path = parsed.path
             elif parsed.netloc or parsed.scheme or link.startswith('#'):
                 continue
@@ -47,7 +50,13 @@ def validate(public=ROOT/'public'):
                 path = parsed.path
             if not path:
                 continue
-            target = public/unquote(path.lstrip('/')) if path.startswith('/') else file.parent/unquote(path)
+            if path.startswith('/'):
+                if not path.startswith(prefix):
+                    errors.append(f'{file.relative_to(public)}: URL escapes the website deployment path {link}')
+                    continue
+                target = public/unquote(path[len(prefix):])
+            else:
+                target = file.parent/unquote(path)
             if target.is_dir():
                 target = target/'index.html'
             if not target.exists():

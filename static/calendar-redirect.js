@@ -1,1 +1,1 @@
-location.replace('/events/'+location.search+location.hash);
+location.replace(document.querySelector('[data-calendar-destination]').getAttribute('href')+location.search+location.hash);

@@ -15,8 +15,14 @@ env:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: read
     steps:
       - uses: actions/checkout@v7.0.1
+      - name: Read the GitHub Pages address
+        uses: actions/configure-pages@v6
+        id: pages
       - uses: actions/setup-python@v7.1.0
         with:
           python-version: '3.12'
@@ -37,6 +43,7 @@ jobs:
           restore-keys: drive-gallery-v1-
       - run: python scripts/build.py
         env:
+          HUGO_BASEURL: ${{ steps.pages.outputs.base_url }}/
           FORBIDDEN_PUBLIC_HOSTS: ${{ vars.FORBIDDEN_PUBLIC_HOSTS }}
           DRIVE_GALLERY_CREDENTIALS_JSON: ${{ secrets.DRIVE_GALLERY_CREDENTIALS_JSON }}
       - uses: actions/upload-pages-artifact@v5.0.0
