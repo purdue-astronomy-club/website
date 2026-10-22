@@ -1,0 +1,4 @@
+<div class="social-links" aria-label="Club links">
+{{ with hugo.Data.site.public_email }}<a class="social-link" href="mailto:{{ . }}" aria-label="Email the club" title="Email the club">{{ partial "social-icon.html" "email" }}</a>{{ end }}
+{{ range slice "instagram" "discord" "github" }}{{ $label := . | title }}{{ if eq . "github" }}{{ $label = "GitHub" }}{{ end }}{{ $icon := . }}{{ with index hugo.Data.site . }}<a class="social-link" href="{{ . }}" aria-label="{{ $label }}" title="{{ $label }}">{{ partial "social-icon.html" $icon }}</a>{{ end }}{{ end }}
+</div>

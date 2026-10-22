@@ -1,13 +1,10 @@
 ---
 title: About Our Club
-summary: A shared curiosity. An extraordinary universe.
 ---
-Purdue Astronomy Club brings people together around a fascination with the night sky. Observation, education, and community are at the heart of what we do.
+Purdue University's official astronomy club. We invite all students and community members, regardless of experience or major, to join us in studying the stars.
 
-## Look up with us
+We are a completely free organization, with no membership dues. We give students the opportunity to study the universe beyond Earth in ways they may have never experienced.
 
-From observing nights and astrophotography to workshops and conversations, there are many ways to explore astronomy. You don’t need to have all the answers to start asking questions.
+We host stargazing, trivia, and movie nights, research talks from both professors and students, and participate in grassroots citizen science research through NASA.
 
-## Find your next opportunity
-
-Our [events calendar](/events/) is the place to find confirmed dates, locations, and event details. Joining information and approved club contact details will be shared on the [contact page](/contact/) when available.
+We are a hobbyist organization for both beginner and expert astrophotographers.

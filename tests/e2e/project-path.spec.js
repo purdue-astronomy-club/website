@@ -68,7 +68,7 @@ test('a GitHub Pages project path loads styles, photos, calendar data and intern
     const telescopeImage = await banner.getAttribute('src');
     await page.getByRole('button', {name: 'Next month', exact: true}).click();
     await expect(banner).toHaveAttribute('src', telescopeImage);
-    await expect(page.locator('#banner-credit')).toHaveText('Telescopes under the stars');
+    await expect(page.locator('#banner-credit')).toBeHidden();
     await page.getByRole('button', {name: 'Previous month', exact: true}).click();
     await expect(page.locator('#enhanced-calendar')).toBeVisible();
     await expect(page.getByRole('link', {name: 'Subscribe / download calendar'})).toHaveAttribute('href', '/website/calendar.ics');
@@ -95,7 +95,7 @@ test('a GitHub Pages project path loads styles, photos, calendar data and intern
     await expect(page).toHaveURL(base + 'events/?month=2026-10');
     await page.waitForFunction(() => window.calendarReady === true);
     await page.setViewportSize({width: 390, height: 844});
-    await expect(page.locator('.fc-listMonth-view')).toBeVisible();
+    await expect(page.locator('.fc-dayGridMonth-view')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
     expect(failures).toEqual([]);
   } finally {

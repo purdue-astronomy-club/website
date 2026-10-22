@@ -1,5 +1,3 @@
 {{ define "main" }}<div class="container page-shell">{{ partial "breadcrumbs.html" . }}<div class="page-heading"><h1>{{ .Title }}</h1>{{ with .Params.summary }}<p class="lead">{{ . }}</p>{{ end }}</div><div class="prose">{{ .Content }}</div>
-{{ if eq .Layout "contact" }}<div class="contact-grid">
-{{ with hugo.Data.site.public_email }}<a class="contact-card" href="mailto:{{ . }}"><span class="eyebrow">Say hello</span><h2>Email the club ↗</h2><p>{{ . }}</p></a>{{ else }}{{ partial "empty-state.html" (dict "title" "Our contact details are coming soon." "text" "Approved club contact information will be posted here. In the meantime, explore the public events calendar.") }}{{ end }}
-{{ range slice "instagram" "discord" "github" }}{{ $label := . | title }}{{ with index hugo.Data.site . }}<a class="contact-card" href="{{ . }}"><span class="eyebrow">Stay connected</span><h2>{{ $label }} ↗</h2></a>{{ end }}{{ end }}</div>{{ end }}
+{{ if eq .Layout "contact" }}{{ partial "social-links.html" . }}{{ end }}
 </div>{{ end }}

@@ -1,6 +1,6 @@
 ---
 title: Example Observing Night — DRAFT ONLY
-summary: Replace this example with verified club event details before publishing.
+summary: Replace this example with club event details before publishing.
 draft: true
 status: scheduled
 calendar_type: pac

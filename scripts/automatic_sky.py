@@ -52,7 +52,7 @@ def calculate(start_year, end_year, config, checked):
             kind,title=PHASES[phase.quarter]
             local=phase.time.Utc().replace(tzinfo=timezone.utc).astimezone(TZ)
             records.append(instant_record(title,kind,phase.time,f'{kind.replace("_","-")}-{local.date()}',
-                'Calculated lunar phase instant. Observing conditions depend on the local sky and weather.',checked))
+                'Lunar phase. Observing conditions depend on the local sky and weather.',checked))
             phase=astronomy.NextMoonQuarter(phase)
     if config.get('planetary_oppositions',True):
         for planet in PLANETS:
@@ -61,14 +61,14 @@ def calculate(start_year, end_year, config, checked):
                 local=moment.Utc().replace(tzinfo=timezone.utc).astimezone(TZ)
                 records.append(instant_record(planet+' at Opposition','opposition',moment,
                     f'opposition-{planet.lower()}-{local.date()}',
-                    'Calculated planetary alignment opposite the Sun. Local visibility and weather vary.',checked,planet))
+                    'Planetary alignment opposite the Sun. Local visibility and weather vary.',checked,planet))
                 moment=astronomy.SearchRelativeLongitude(getattr(astronomy.Body,planet),0,moment.AddDays(1))
     if config.get('seasons',True):
         for year in range(start_year,end_year+1):
             seasons=astronomy.Seasons(year)
             for field,title in [('mar_equinox','March Equinox'),('jun_solstice','June Solstice'),('sep_equinox','September Equinox'),('dec_solstice','December Solstice')]:
                 records.append(instant_record(title,'season',getattr(seasons,field),f'{field.replace("_","-")}-{year}',
-                    'Calculated seasonal solar event, shown in Indiana local time.',checked))
+                    'Seasonal solar event.',checked))
     return records
 
 
@@ -105,7 +105,7 @@ def automatic_events(root=ROOT, manual=(), now=None):
     for item in records:
         front={'title':item['title'],'summary':item['summary'],'draft':False,'kind':item['category']}
         body='This entry updates automatically with the website’s daily build. '
-        body+=('Meteor dates describe the source’s predicted peak night, not an exact peak time. ' if item['origin']=='forecast' else 'This is an approximate calculated instant, not a scheduled club activity. ')
+        body+=('Meteor dates describe the source’s predicted peak night, not an exact peak time. ' if item['origin']=='forecast' else 'This date marks a celestial event. ')
         body+='A listed celestial event does not guarantee visibility from campus. Check local sky conditions before observing.'
         (generated/(item['slug']+'.md')).write_text('---\n'+yaml.safe_dump(front,sort_keys=False)+'---\n'+body+'\n')
     status={'enabled':True,'startYear':first,'endYear':last,'calculatedOn':checked,'engine':'Astronomy Engine 2.1.19',
