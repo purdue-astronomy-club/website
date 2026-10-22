@@ -1,7 +1,7 @@
 ---
 title: Hana Yang
 role: Honorary
-display_order: 60
+display_order: 80
 active: true
 draft: false
 image: /uploads/officers/hana-yang.webp
