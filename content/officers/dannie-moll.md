@@ -7,4 +7,4 @@ draft: false
 image: /uploads/officers/dannie-moll.webp
 image_alt: Portrait of Dannie Moll
 ---
-Senior in Physics.
+Sophomore in Physics.
