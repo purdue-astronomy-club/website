@@ -18,7 +18,7 @@ markup:
     renderer:
       unsafe: false
 params:
-  description: Exploring the universe through observation, education, and community.
+  description: Purdue University's official astronomy club. Free stargazing, astrophotography, and community for all experience levels.
 frontmatter:
   publishDate:
   - publish_date

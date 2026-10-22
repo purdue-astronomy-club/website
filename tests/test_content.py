@@ -173,7 +173,7 @@ class ContentTests(unittest.TestCase):
     def test_cms_collections_and_safe_defaults(self):
         config=yaml.safe_load((ROOT/'.pages.yml').read_text())
         entries={e['name']:e for e in config['content']}
-        self.assertTrue({'events','astronomy','calendar_months','albums','astrophotography','officers','sponsors','announcements','home','site','about','contact'}<=entries.keys())
+        self.assertTrue({'events','astronomy','calendar_months','albums','astrophotography','officers','sponsors','announcements','home','site','home_about','contact'}<=entries.keys())
         for entry in entries.values():
             if entry['type']=='collection':
                 self.assertTrue(next(f for f in entry['fields'] if f['name']=='draft')['default'])

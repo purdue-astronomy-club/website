@@ -633,9 +633,6 @@ content:
   - name: headline
     label: Hero headline
     type: string
-  - name: introduction
-    label: Short homepage description
-    type: text
   - name: hero_image
     label: Override default lunar eclipse photo (optional)
     type: image
@@ -654,7 +651,7 @@ content:
     label: Events button text
     type: string
   - name: secondary_cta
-    label: About button text
+    label: Gallery button text
     type: string
   - name: hero_credit
     label: Credit for replacement hero image
@@ -682,17 +679,17 @@ content:
   - name: footer_text
     label: Footer description
     type: text
-- name: about
-  label: About the Club
+- name: home_about
+  label: Homepage About Text
   type: file
-  path: content/about.md
+  path: content/_index.md
   format: yaml-frontmatter
   operations:
     delete: false
   fields:
   - name: title
     type: string
-    default: About
+    default: Purdue Astronomy Club
   - name: body
     type: rich-text
 - name: contact

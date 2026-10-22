@@ -1,4 +1,4 @@
 {{- /* A changed background also invalidates browsers' cached Events HTML. */ -}}
-{{- $photo := resources.Get "images/events-telescopes.png" -}}
+{{- $photo := resources.Get "images/rigs.jpg" -}}
 {{- $version := substr (crypto.SHA256 $photo.Content) 0 12 -}}
 {{- return (printf "%s?v=%s" (relURL "events/") $version) -}}

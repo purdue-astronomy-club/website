@@ -105,7 +105,7 @@ All published gallery photos join the carousel automatically; there is no separa
 - **Sponsors and Partners:** add only approved relationships. Add a name, logo/alt, description, website, and order. The public acknowledgments page is `/sponsors/`.
 - **Homepage Settings:** edit the introduction, headline, hero image/alt text, button labels, and gallery/news visibility.
 - **Contact and Social Links:** approved public email, full HTTPS social links, footer copy. Leave unused fields blank.
-- **About the Club / Contact Page:** edit text with the rich-text editor. Add the club’s confirmed membership instructions here.
+- **Homepage About Text / Contact Page:** edit the homepage introduction and contact copy with the rich-text editor.
 
 The CMS changes content within the site’s design. Layout/CSS redesigns require a developer.
 

@@ -11,7 +11,7 @@ for (const width of [360,390,768,1024,1440,1920]) {
   await expect(page.locator('.fc-dayGridMonth-view')).toBeVisible();
  });
 }
-for (const route of ['/','/events/?month=2026-10','/about/','/gallery/','/officers/','/contact/']) {
+for (const route of ['/','/events/?month=2026-10','/gallery/','/officers/','/contact/']) {
  test(`accessibility ${route}`, async({page})=>{
   await page.goto(route);
   if(route.includes('events'))await page.waitForFunction(()=>window.calendarReady);
@@ -52,12 +52,13 @@ test('month calendar keeps category filters without an agenda',async({page})=>{
  await expect(page.locator('#month-overview')).toHaveCount(0);
 });
 test('monthly banner credit and sourced notes follow selected month',async({page})=>{
- await page.route('**/months.json',r=>r.fulfill({json:[{month:'2026-10',banner_image:'/images/hero-lunar-eclipse.png',banner_alt:'Fixture monthly image',photographer:'Test photographer',permission_to_publish:true,night_sky_notes:'Fixture sky notes',source_url:'https://science.nasa.gov/',last_verified:'2026-10-22'}]}));
+ await page.route('**/months.json',r=>r.fulfill({json:[{month:'2026-10',banner_image:'/fixture-banner.jpg',banner_alt:'Fixture monthly image',photographer:'Test photographer',permission_to_publish:true,night_sky_notes:'Fixture sky notes',source_url:'https://science.nasa.gov/',last_verified:'2026-10-22'}]}));
+ await page.route('**/fixture-banner.jpg',route=>route.fulfill({path:'assets/images/eclipse.jpg',contentType:'image/jpeg'}));
  await page.goto('/events/?month=2026-10');await page.waitForFunction(()=>window.calendarReady);
  await expect(page.locator('#banner-credit')).toHaveText('Photo: Test photographer');
  await expect(page.locator('#sky-notes')).toContainText('Fixture sky notes');
  await page.getByRole('button',{name:'Next month',exact:true}).click();
- await expect(page.locator('#banner-credit')).toBeHidden();
+ await expect(page.locator('#banner-credit')).toHaveText('Photo by Justin Lin');
  await expect(page.locator('#sky-notes')).not.toContainText('Fixture sky notes');
 });
 test('local photo preparation produces a download without an upload',async({page})=>{
@@ -66,7 +67,8 @@ test('local photo preparation produces a download without an upload',async({page
  await expect(page.locator('#prepared-photos a')).toHaveAttribute('download','test-web.webp');
 });
 test('photo viewer supports keyboard close and returns focus',async({page})=>{
- await page.route('**/gallery/',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('</main>','<figure><a href="/images/hero-lunar-eclipse.png" data-lightbox data-caption="Fixture caption" data-credit="Test photographer"><img src="/images/hero-lunar-eclipse.png" alt="Fixture photo"></a></figure></main>')});});
+ await page.route('**/fixture-photo.jpg',route=>route.fulfill({path:'assets/images/eclipse.jpg',contentType:'image/jpeg'}));
+ await page.route('**/gallery/',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('</main>','<figure><a href="/fixture-photo.jpg" data-lightbox data-caption="Fixture caption" data-credit="Test photographer"><img src="/fixture-photo.jpg" alt="Fixture photo"></a></figure></main>')});});
  await page.goto('/gallery/');const link=page.locator('[data-lightbox]');await link.press('Enter');
  await expect(page.getByRole('dialog',{name:'Photo viewer'})).toBeVisible();
  await page.getByRole('button',{name:'Close photo ×'}).press('Escape');

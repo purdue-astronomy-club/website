@@ -63,12 +63,12 @@ test('a GitHub Pages project path loads styles, photos, calendar data and intern
     expect(new URL(page.url()).searchParams.get('v')).toMatch(/^[a-f0-9]{12}$/);
     await page.waitForFunction(() => window.calendarReady === true);
     const banner = page.locator('#month-banner');
-    await expect(banner).toHaveAttribute('src', /^\/website\/images\/events-telescopes\.[a-f0-9]{64}\.png$/);
+    await expect(banner).toHaveAttribute('src', /^\/website\/images\/rigs\.[a-f0-9]{64}\.jpg$/);
     await banner.evaluate(img => img.decode());
     const telescopeImage = await banner.getAttribute('src');
     await page.getByRole('button', {name: 'Next month', exact: true}).click();
     await expect(banner).toHaveAttribute('src', telescopeImage);
-    await expect(page.locator('#banner-credit')).toBeHidden();
+    await expect(page.locator('#banner-credit')).toHaveText('Photo by Justin Lin');
     await page.getByRole('button', {name: 'Previous month', exact: true}).click();
     await expect(page.locator('#enhanced-calendar')).toBeVisible();
     await expect(page.getByRole('link', {name: 'Subscribe / download calendar'})).toHaveAttribute('href', '/website/calendar.ics');

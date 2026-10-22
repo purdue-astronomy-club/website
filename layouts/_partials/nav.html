@@ -3,5 +3,5 @@
 <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" hidden>Menu <span aria-hidden="true">☰</span></button>
 <nav id="main-nav" aria-label="Main navigation">
 {{ $current := . }}{{ range slice "About" "Events" "Gallery" "Officers" "Contact" }}{{ $url := printf "/%s/" (lower .) }}
-<a href="{{ if eq . "Events" }}{{ partial "events-url.html" . }}{{ else }}{{ partial "site-url.html" $url }}{{ end }}"{{ if eq $current.RelPermalink (partial "site-url.html" $url) }} aria-current="page"{{ end }}>{{ . }}</a>{{ end }}
+<a href="{{ if eq . "Events" }}{{ partial "events-url.html" . }}{{ else if eq . "About" }}{{ relURL "" }}#about{{ else }}{{ partial "site-url.html" $url }}{{ end }}"{{ if eq $current.RelPermalink (partial "site-url.html" $url) }} aria-current="page"{{ end }}>{{ . }}</a>{{ end }}
 </nav></div></header>

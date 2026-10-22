@@ -136,7 +136,7 @@ Open **[Pages CMS](https://app.pagescms.org/)** and sign in with the officer’s
 | Sponsors and Partners | Approved acknowledgments, logos, public links, order |
 | Homepage Settings | Hero headline, description, image, button text, section visibility |
 | Contact and Social Links | Approved public email/social links and footer copy |
-| About the Club / Contact Page | Page copy in a rich-text editor |
+| Homepage About Text / Contact Page | Homepage introduction and contact copy in a rich-text editor |
 | Generate Monthly Calendar Graphic | Optional workflow producing downloadable PNG/PDF artifacts |
 
 Save changes in Pages CMS. It commits to GitHub; Actions validates, builds, and deploys automatically. The CMS is a content editor, not a drag-and-drop redesign tool. The site’s underlying layout remains consistent.

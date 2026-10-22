@@ -15,6 +15,7 @@
     const isPoster = document.body.classList.contains('poster');
     const fallbackImage = document.querySelector('#month-banner').getAttribute('src');
     const fallbackAlt = document.querySelector('#month-banner').alt;
+    const fallbackCredit = document.querySelector('#banner-credit').textContent;
     const enabled = new Set(['pac','joint','astronomy']);
     const icons = new Set(['new-moon','first-quarter','full-moon','last-quarter','meteor','mars','jupiter','saturn','uranus','neptune','planet','sun','eclipse','star']);
     const iconNode = r => {
@@ -74,7 +75,7 @@
         banner.src=month?.banner_image || fallbackImage;
         banner.alt=month?.banner_alt || fallbackAlt;
         const credit=document.querySelector('#banner-credit');
-        credit.textContent=month?.photographer ? 'Photo: '+month.photographer : '';
+        credit.textContent=month?.photographer ? 'Photo: '+month.photographer : fallbackCredit;
         credit.hidden=!credit.textContent;
         if (month) { ['night_sky_notes','visible_planets_notes'].forEach(field=>{if(month[field]){const p=document.createElement('p');p.className='sky-editorial';p.textContent=month[field];sky.append(p);}}); if(month.source_url){const a=document.createElement('a');a.href=month.source_url;a.textContent='Sky notes source ↗';sky.append(a);} }
         status.textContent=visible.length ? visible.length+' calendar '+(visible.length===1?'entry':'entries')+' shown for '+title+'.' : 'No events announced for '+title+'.';
