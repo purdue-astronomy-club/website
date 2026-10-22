@@ -1,7 +1,7 @@
 {{ define "main" }}
 {{ partial "hero.html" . }}
 <section class="activities container" aria-label="What we explore">
-{{ range slice (dict "icon" "telescope" "title" "Observing Nights" "text" "Look up. See more.") (dict "icon" "camera" "title" "Astrophotography" "text" "Capture a little infinity.") (dict "icon" "workshop" "title" "Workshops" "text" "Learn through discovery.") (dict "icon" "community" "title" "Community" "text" "Curiosity brings us together.") }}
+{{ range slice (dict "icon" "telescope" "title" "Observing Nights") (dict "icon" "camera" "title" "Astrophotography") (dict "icon" "workshop" "title" "Workshops") (dict "icon" "community" "title" "Community") }}
 <div>{{ partial "icon.html" .icon }}<h2>{{ .title }}</h2><p>{{ .text }}</p></div>{{ end }}</section>
 <section class="club-intro container" aria-labelledby="club-intro-title"><h2 id="club-intro-title">Our Club</h2><div class="club-description">{{ .Content }}</div></section>
 <section id="upcoming-events" class="section container"><div class="section-heading"><div><h2>Upcoming Events</h2></div><a class="text-link" href="{{ partial "events-url.html" . }}">View the calendar <span aria-hidden="true">→</span></a></div>
