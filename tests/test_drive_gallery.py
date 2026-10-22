@@ -256,7 +256,16 @@ class DriveGalleryTests(unittest.TestCase):
         if not hugo:
             self.skipTest('Hugo is needed for full gallery integration')
         for folder in ['content', 'data', 'assets', 'layouts', 'static']:
-            shutil.copytree(ROOT/folder, self.root/folder, dirs_exist_ok=True)
+            ignore = shutil.ignore_patterns('uploads', 'media', 'astronomy', 'events', 'events.json', 'months.json', 'calendar.ics') if folder == 'static' else None
+            shutil.copytree(ROOT/folder, self.root/folder, dirs_exist_ok=True, ignore=ignore)
+        # A real CMS event, album or officer record must not become a fixture or
+        # require the club's uploaded photos in this isolated gallery build.
+        for entry in (self.root/'content').glob('*/*.md'):
+            if not entry.name.startswith('_'):
+                entry.unlink()
+        (self.root/'data/calendar/banners.yml').write_text('[]\n')
+        (self.root/'data/home.yml').write_text('show_gallery: true\n')
+        (self.root/'data/site.yml').write_text('{}\n')
         shutil.copy(ROOT/'hugo.yaml', self.root/'hugo.yaml')
         (self.root/'data/astronomy.yml').write_text('enabled: false\n')
         self.config['photos'] = [{'filename': self.client.files[0]['name'], 'caption': 'Spiral arms & a bright core.'}]
@@ -269,6 +278,7 @@ class DriveGalleryTests(unittest.TestCase):
             shutil.copytree(self.root/'.generated/uploads', self.root/'public/uploads', dirs_exist_ok=True)
             validate(self.root/'public')
         build()
+        self.assertEqual(json.loads((self.root/'public/events.json').read_text()), [])
         gallery = (self.root/'public/gallery/index.html').read_text()
         self.assertIn('Andromeda Galaxy', gallery)
         self.assertIn('Image by Jane Doe', gallery)

@@ -7,7 +7,7 @@ import unittest
 import yaml
 from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts'))
-from content import ROOT, TZ, collect, normalize, local_datetime, public_url
+from content import ROOT, TZ, collect, normalize, local_datetime, public_url, read_record
 from build_calendar import calendar_bytes, generate
 from optimize_images import optimize
 from icalendar import Calendar
@@ -32,6 +32,18 @@ class ContentTests(unittest.TestCase):
         return path
     def norm(self, **changes):
         return normalize(dict(BASE_EVENT, **changes),'events','test-event',self.now)
+    def test_cms_unquoted_clock_values_remain_text(self):
+        record=dict(BASE_EVENT,start_time='18:45',end_time='20:15',display_order=10)
+        path=self.write(record)
+        path.write_text(path.read_text().replace("'18:45'",'18:45').replace("'20:15'",'20:15'))
+        parsed,_=read_record(path)
+        self.assertEqual(parsed['start_time'],'18:45')
+        self.assertEqual(parsed['end_time'],'20:15')
+        self.assertIs(parsed['draft'],False)
+        self.assertEqual(parsed['display_order'],10)
+        events,_=collect(self.root,self.now)
+        self.assertEqual(events[0]['start'],'2026-11-12T18:45:00-05:00')
+        self.assertEqual(events[0]['end'],'2026-11-12T20:15:00-05:00')
     def test_draft_not_in_feed(self):
         self.write(dict(BASE_EVENT,draft=True))
         self.assertEqual(collect(self.root)[0],[])

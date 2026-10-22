@@ -23,8 +23,17 @@ class IntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)
             for folder in ['content','data','assets','layouts','static']:
-                ignore=shutil.ignore_patterns('media','drive-gallery','astronomy','events','events.json','months.json','calendar.ics') if folder=='static' else None
+                ignore=shutil.ignore_patterns('uploads','media','astronomy','events','events.json','months.json','calendar.ics') if folder=='static' else None
                 shutil.copytree(ROOT/folder,root/folder,ignore=ignore)
+            # Keep the site's layouts and section pages, but populate collections
+            # and settings with fixtures rather than the club's current CMS data.
+            for entry in (root/'content').glob('*/*.md'):
+                if not entry.name.startswith('_'):
+                    entry.unlink()
+            (root/'static/uploads').mkdir(parents=True,exist_ok=True)
+            (root/'data/calendar/banners.yml').write_text('[]\n')
+            (root/'data/home.yml').write_text('show_gallery: true\n')
+            (root/'data/site.yml').write_text('{}\n')
             shutil.copy(ROOT/'hugo.yaml',root/'hugo.yaml')
             (root/'data/astronomy.yml').write_text('enabled: false\n')
             def write(section,slug,record):
@@ -47,6 +56,7 @@ class IntegrationTests(unittest.TestCase):
                 subprocess.run([hugo,'--source',str(root),'--minify','--cleanDestinationDir'],check=True,capture_output=True)
                 validate(root/'public')
             build()
+            self.assertEqual([r['id'] for r in json.loads((root/'public/events.json').read_text())],['events/fixture-event'])
             homepage=(root/'public/index.html').read_text()
             self.assertIn('Fixture event',homepage)
             self.assertEqual(homepage.count('carousel-slide'),4)

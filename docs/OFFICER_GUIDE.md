@@ -22,7 +22,7 @@ A CMS Save creates a GitHub commit. GitHub Actions validates the content, builds
 4. Set the date and 24-hour local time: `19:00` means 7 PM. Times use Purdue’s Indiana time zone, with daylight saving handled automatically. Do not convert to UTC yourself.
 5. For a timed event, leave End date blank if it ends the same day; supply End time if known. If End time is blank the calendar invitation uses a one-hour duration. For overnight events, supply both End date and End time. For all-day events, turn All-day on; the last occupied date is inclusive.
 6. Add a confirmed location, optional address/map link, optional public signup link, and full description using the rich-text editor.
-7. Optionally select/upload a prepared cover image, then describe it in the alt text field.
+7. Optionally select/upload a prepared cover image. If you select a photo, fill in **Describe cover photo (required when a photo is selected)** with a brief description of what it shows. This description is required for publication.
 8. Set status to Scheduled, confirm the details, turn Draft off, and Save.
 9. Check the Actions run, the public calendar, and the event detail page.
 

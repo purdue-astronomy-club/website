@@ -13,8 +13,21 @@ BASE = 'https://purdueastro.club'
 TYPES = {'pac': 'PAC event', 'joint': 'Joint event', 'astronomy': 'Astronomy'}
 
 
+class ContentLoader(yaml.SafeLoader):
+    """Keep CMS clock strings instead of YAML 1.1's obsolete base-60 integers."""
+
+
+def integer_or_clock(loader, node):
+    if ':' in node.value:
+        return loader.construct_scalar(node)
+    return yaml.SafeLoader.construct_yaml_int(loader, node)
+
+
+ContentLoader.add_constructor('tag:yaml.org,2002:int', integer_or_clock)
+
+
 def read_yaml(path):
-    return yaml.safe_load(path.read_text())
+    return yaml.load(path.read_text(), Loader=ContentLoader)
 
 
 def read_record(path):
@@ -22,7 +35,7 @@ def read_record(path):
     if not text.startswith('---\n'):
         raise ValueError('Entry needs YAML front matter')
     parts = text.split('---', 2)
-    return yaml.safe_load(parts[1]) or {}, parts[2].strip()
+    return yaml.load(parts[1], Loader=ContentLoader) or {}, parts[2].strip()
 
 
 def day(value):

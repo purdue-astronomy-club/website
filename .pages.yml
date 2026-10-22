@@ -116,7 +116,7 @@ content:
     label: Cover photograph
     type: image
   - name: cover_alt
-    label: Describe cover photo for accessibility
+    label: Describe cover photo (required when a photo is selected)
     type: text
   - name: address
     label: Public address (optional)

@@ -12,4 +12,5 @@ start_time: 18:45
 all_day: false
 location: PHYS 201
 cover_image: /uploads/mvjumhym-ffummln1.png
+cover_alt: Red-lit telescope and camera equipment on an equatorial mount beneath a starry sky.
 ---
