@@ -50,12 +50,12 @@ test('same feed drives month list, filters and labelled statuses',async({page})=
  await expect(page.locator('.fc-listMonth-view')).toContainText('Fixture location');
 });
 test('monthly banner credit and sourced notes follow selected month',async({page})=>{
- await page.route('**/months.json',r=>r.fulfill({json:[{month:'2026-10',banner_image:'/images/hero-bell-tower.webp',banner_alt:'Fixture monthly image',photographer:'Test photographer',permission_to_publish:true,night_sky_notes:'Fixture sky notes',source_url:'https://science.nasa.gov/',last_verified:'2026-10-22'}]}));
+ await page.route('**/months.json',r=>r.fulfill({json:[{month:'2026-10',banner_image:'/images/hero-lunar-eclipse.png',banner_alt:'Fixture monthly image',photographer:'Test photographer',permission_to_publish:true,night_sky_notes:'Fixture sky notes',source_url:'https://science.nasa.gov/',last_verified:'2026-10-22'}]}));
  await page.goto('/events/?month=2026-10');await page.waitForFunction(()=>window.calendarReady);
  await expect(page.locator('#banner-credit')).toHaveText('Photo: Test photographer');
  await expect(page.locator('#sky-notes')).toContainText('Fixture sky notes');
  await page.getByRole('button',{name:'Next month',exact:true}).click();
- await expect(page.locator('#banner-credit')).toHaveText('Purdue Bell Tower · Illustrated night sky');
+ await expect(page.locator('#banner-credit')).toHaveText('Purdue campus · Lunar eclipse sequence');
  await expect(page.locator('#sky-notes')).not.toContainText('Fixture sky notes');
 });
 test('local photo preparation produces a download without an upload',async({page})=>{
@@ -64,7 +64,7 @@ test('local photo preparation produces a download without an upload',async({page
  await expect(page.locator('#prepared-photos a')).toHaveAttribute('download','test-web.webp');
 });
 test('photo viewer supports keyboard close and returns focus',async({page})=>{
- await page.route('**/gallery/',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('</main>','<figure><a href="/images/hero-bell-tower.webp" data-lightbox data-caption="Fixture caption" data-credit="Test photographer"><img src="/images/hero-bell-tower.webp" alt="Fixture photo"></a></figure></main>')});});
+ await page.route('**/gallery/',async route=>{const response=await route.fetch();await route.fulfill({response,body:(await response.text()).replace('</main>','<figure><a href="/images/hero-lunar-eclipse.png" data-lightbox data-caption="Fixture caption" data-credit="Test photographer"><img src="/images/hero-lunar-eclipse.png" alt="Fixture photo"></a></figure></main>')});});
  await page.goto('/gallery/');const link=page.locator('[data-lightbox]');await link.press('Enter');
  await expect(page.getByRole('dialog',{name:'Photo viewer'})).toBeVisible();
  await page.getByRole('button',{name:'Close photo ×'}).press('Escape');

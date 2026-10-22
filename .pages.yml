@@ -637,7 +637,7 @@ content:
     label: Short homepage description
     type: text
   - name: hero_image
-    label: Override default Bell Tower image (optional)
+    label: Override default lunar eclipse photo (optional)
     type: image
   - name: hero_image_alt
     label: Hero image description

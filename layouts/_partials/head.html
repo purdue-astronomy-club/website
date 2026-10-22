@@ -10,8 +10,8 @@
 <meta property="og:description" content="{{ $description }}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ .Permalink }}">
-{{ $hero := resources.Get "images/hero-bell-tower.webp" }}
-{{ $ogImage := $hero.Permalink }}{{ $ogAlt := "Illustration of the Purdue Bell Tower beneath a star-filled sky" }}
+{{ $hero := resources.Get "images/hero-lunar-eclipse.png" }}
+{{ $ogImage := $hero.Permalink }}{{ $ogAlt := "Sequence of lunar eclipse phases above an illuminated sculpture on Purdue’s campus." }}
 {{ if .IsHome }}{{ with hugo.Data.home.hero_image }}{{ $ogImage = (partial "site-url.html" .) | absURL }}{{ $ogAlt = hugo.Data.home.hero_image_alt }}{{ end }}{{ else }}{{ with .Params.image | default .Params.cover_image }}{{ $ogImage = (partial "site-url.html" .) | absURL }}{{ $ogAlt = $.Params.alt | default $.Params.image_alt | default $.Params.cover_alt }}{{ end }}{{ end }}
 <meta property="og:image" content="{{ $ogImage }}">
 <meta property="og:image:alt" content="{{ $ogAlt }}">

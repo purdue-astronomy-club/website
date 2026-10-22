@@ -59,7 +59,7 @@ Use **Calendar Months and Banner Photos** only for month presentation:
 - Optionally write verified sky notes and add their source URL and verification date.
 - Save. There is no second schedule to type.
 
-Months without a photo use the illustrated Bell Tower fallback. Images without permission also fall back safely. The calendar’s month can be shared with a link such as `https://purdueastro.club/events/?month=2026-11`.
+Months without a photo use the default Purdue lunar eclipse photo. Images without permission also fall back safely. The calendar’s month can be shared with a link such as `https://purdueastro.club/events/?month=2026-11`.
 
 ## Publish an event photo album
 
