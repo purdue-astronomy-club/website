@@ -7,4 +7,4 @@ draft: false
 image: /uploads/officers/hana-yang.webp
 image_alt: Portrait of Hana Yang
 ---
-Sophomore in Physics.
+Sophomore in Physics and Aerospace Engineering.
