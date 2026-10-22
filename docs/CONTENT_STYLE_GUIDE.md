@@ -8,4 +8,4 @@ Every informative image needs alt text describing what is visible. Use captions 
 
 Obtain permission before publishing photographs or personal information. Check backgrounds for sensitive details, export web copies without location metadata, and retain originals elsewhere. The photo preparation tool is an optional browser-only aid; review its output. Source uploads in GitHub are public even when a content entry is a draft.
 
-The default background is a lunar eclipse sequence above Purdue’s campus. A replacement club photograph should have its own accurate alt text and credit. Do not imply Purdue or a sponsor has endorsed the club unless that relationship is confirmed.
+The homepage background is a lunar eclipse sequence above Purdue’s campus; the calendar’s default background shows telescopes under the stars. A replacement club photograph should have its own accurate alt text and credit. Do not imply Purdue or a sponsor has endorsed the club unless that relationship is confirmed.

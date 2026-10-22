@@ -85,7 +85,7 @@ class IntegrationTests(unittest.TestCase):
                 parser=Links();parser.feed((root/'public/index.html').read_text())
                 self.assertTrue(any(url.startswith('/website/css/') for url in parser.links))
                 self.assertTrue(any(url.startswith('/website/media/') for url in parser.links))
-                self.assertIn('/website/events/',parser.links)
+                self.assertTrue(any(url.startswith('/website/events/?v=') for url in parser.links))
                 records=json.loads((root/'public/events.json').read_text())
                 self.assertEqual(records[0]['url'],'/website/events/fixture-event/')
                 self.assertEqual(records[0]['coverImage'],'/website/uploads/fixture-0.jpg')

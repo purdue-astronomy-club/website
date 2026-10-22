@@ -1,1 +1,1 @@
-<a href="{{ partial "site-url.html" .Destination }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>
+<a href="{{ if eq .Destination "/events/" }}{{ partial "events-url.html" . }}{{ else }}{{ partial "site-url.html" .Destination }}{{ end }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text | safeHTML }}</a>

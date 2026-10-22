@@ -55,7 +55,7 @@ test('monthly banner credit and sourced notes follow selected month',async({page
  await expect(page.locator('#banner-credit')).toHaveText('Photo: Test photographer');
  await expect(page.locator('#sky-notes')).toContainText('Fixture sky notes');
  await page.getByRole('button',{name:'Next month',exact:true}).click();
- await expect(page.locator('#banner-credit')).toHaveText('Purdue campus · Lunar eclipse sequence');
+ await expect(page.locator('#banner-credit')).toHaveText('Telescopes under the stars');
  await expect(page.locator('#sky-notes')).not.toContainText('Fixture sky notes');
 });
 test('local photo preparation produces a download without an upload',async({page})=>{

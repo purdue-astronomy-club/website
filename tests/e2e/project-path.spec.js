@@ -11,6 +11,7 @@ test('a GitHub Pages project path loads styles, photos, calendar data and intern
   const checkout = mkdtempSync(join(tmpdir(), 'pac-project-test-'));
   const ignored = new Set(['media', 'drive-gallery', 'events', 'astronomy', 'events.json', 'months.json', 'calendar.ics']);
   let server;
+  let seedStaleCalendar = true;
   try {
     for (const folder of ['assets', 'content', 'data', 'layouts', 'static', 'scripts', 'hugo.yaml']) {
       cpSync(join(source, folder), join(checkout, folder), {recursive: true, filter: path => {
@@ -25,10 +26,17 @@ test('a GitHub Pages project path loads styles, photos, calendar data and intern
     });
     // Serve only /website/. A mistakenly requested /css, /media or /events.json
     // must return 404, matching GitHub project hosting instead of the root preview.
-    const types = {'.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.ics': 'text/calendar'};
+    const types = {'.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png', '.ics': 'text/calendar'};
     server = createServer((req, res) => {
       const path = new URL(req.url, 'http://localhost').pathname;
       if (!path.startsWith('/website/')) { res.writeHead(404).end(); return; }
+      if (seedStaleCalendar && req.url === '/website/events/') {
+        seedStaleCalendar = false;
+        res.setHeader('Content-Type', 'text/html');
+        res.setHeader('Cache-Control', 'max-age=600');
+        res.end('<!doctype html><h1>Old cached Events page</h1>');
+        return;
+      }
       let file = join(checkout, 'public', decodeURIComponent(path.slice('/website/'.length)));
       if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');
       if (!existsSync(file)) { res.writeHead(404).end(); return; }
@@ -37,6 +45,10 @@ test('a GitHub Pages project path loads styles, photos, calendar data and intern
     });
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     const base = `http://127.0.0.1:${server.address().port}/website/`;
+    // Reproduce visiting Events before a deployment. Clicking from the updated
+    // homepage must bypass this still-fresh cached HTML without a manual reload.
+    await page.goto(base + 'events/');
+    await expect(page.getByRole('heading')).toHaveText('Old cached Events page');
     const failures = [];
     page.on('response', response => { if (response.status() >= 400) failures.push(response.url()); });
     page.on('pageerror', error => failures.push(error.message));
@@ -47,8 +59,17 @@ test('a GitHub Pages project path loads styles, photos, calendar data and intern
     await page.locator('.hero-image').evaluate(img => img.decode());
     if (browserName === 'chromium') await page.screenshot({path: 'docs/screenshots/project-home-desktop.jpg', type: 'jpeg', quality: 90});
     await page.getByRole('navigation', {name: 'Main navigation'}).getByRole('link', {name: 'Events', exact: true}).click();
-    await expect(page).toHaveURL(/\/website\/events\/(?:\?month=\d{4}-\d{2})?$/);
+    expect(new URL(page.url()).pathname).toBe('/website/events/');
+    expect(new URL(page.url()).searchParams.get('v')).toMatch(/^[a-f0-9]{12}$/);
     await page.waitForFunction(() => window.calendarReady === true);
+    const banner = page.locator('#month-banner');
+    await expect(banner).toHaveAttribute('src', /^\/website\/images\/events-telescopes\.[a-f0-9]{64}\.png$/);
+    await banner.evaluate(img => img.decode());
+    const telescopeImage = await banner.getAttribute('src');
+    await page.getByRole('button', {name: 'Next month', exact: true}).click();
+    await expect(banner).toHaveAttribute('src', telescopeImage);
+    await expect(page.locator('#banner-credit')).toHaveText('Telescopes under the stars');
+    await page.getByRole('button', {name: 'Previous month', exact: true}).click();
     await expect(page.locator('#enhanced-calendar')).toBeVisible();
     await expect(page.getByRole('link', {name: 'Subscribe / download calendar'})).toHaveAttribute('href', '/website/calendar.ics');
     const event = page.locator('#calendar a[href^="/website/astronomy/"]').first();
