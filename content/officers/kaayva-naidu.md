@@ -1,7 +1,7 @@
 ---
 title: Kaayva Naidu
 role: Secretary
-display_order: 80
+display_order: 60
 active: true
 draft: false
 image: /uploads/officers/kaayva-naidu.webp
