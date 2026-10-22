@@ -3,7 +3,7 @@ title: Telescope Workshop
 summary: Telescope workshop designed to teach about the different types of
   telescopes, how to choose which is right for you, and what goes into a
   astrophotography rig.
-draft: true
+draft: false
 status: scheduled
 calendar_type: pac
 category: workshop
