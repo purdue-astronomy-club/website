@@ -30,7 +30,7 @@ Production refreshes every six hours and on manual builds/CMS saves. No Drive cr
 
 The eight **2026–27 officer core** profiles, portraits, roles, class years and majors are included from the club’s [existing People page](https://sites.google.com/view/purduepac/people). Both published Treasurer roles were retained. Photos are local metadata-free WebP assets, so Google Sites is not needed at runtime. Edit each person in **Pages CMS → Club Officers**, and change the academic year/introduction in **Officer Page Settings**. Clicking a name opens its full profile.
 
-The homepage introduction is edited in **Pages CMS → Homepage About Text** (`content/_index.md`). The About navigation link jumps to that introduction; there is no separate About page. The default backgrounds use the original JPEGs at 7008×4672 (Ali Khichi’s eclipse) and 5260×3507 (Justin Lin’s telescopes). Hugo fingerprints these assets without resizing or recompressing them. They bypass the upload thumbnail pipeline; the eclipse loads eagerly at high priority.
+The homepage introduction is edited in **Pages CMS → Homepage About Text** (`content/_index.md`). The club description appears above Upcoming Events, with an introductory paragraph and three columns on desktop that stack on phones. There is no About page or navigation link. The default backgrounds use the original JPEGs at 7008×4672 (Ali Khichi’s eclipse) and 5260×3507 (Justin Lin’s telescopes). Hugo fingerprints these assets without resizing or recompressing them. They bypass the upload thumbnail pipeline; the eclipse loads eagerly at high priority.
 
 ## Local build
 

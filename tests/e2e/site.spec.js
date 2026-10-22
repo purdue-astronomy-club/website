@@ -36,7 +36,7 @@ test('keyboard menu',async({page})=>{
  await page.setViewportSize({width:390,height:844});await page.goto('/');
  const menu=page.getByRole('button',{name:/Menu/});await menu.press('Enter');
  await expect(menu).toHaveAttribute('aria-expanded','true');
- await page.getByRole('navigation',{name:'Main navigation'}).getByRole('link',{name:'About',exact:true}).press('Escape');
+ await page.getByRole('navigation',{name:'Main navigation'}).getByRole('link',{name:'Events',exact:true}).press('Escape');
  await expect(menu).toBeFocused();await expect(menu).toHaveAttribute('aria-expanded','false');
 });
 test('month calendar keeps category filters without an agenda',async({page})=>{
