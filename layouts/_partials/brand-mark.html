@@ -1,2 +1,5 @@
-{{- $logo := resources.Get "images/purdue-astronomy-club.svg" | fingerprint -}}
-<span class="brand-mark"><img src="{{ $logo.RelPermalink }}" alt="" width="170" height="170"></span>
+{{- $master := resources.Get "images/purdue-astronomy-club.png" -}}
+{{- $small := $master.Resize "128x128 png" | fingerprint -}}
+{{- $medium := $master.Resize "256x256 png" | fingerprint -}}
+{{- $large := $master.Resize "512x512 png" | fingerprint -}}
+<span class="brand-mark"><img src="{{ $medium.RelPermalink }}" srcset="{{ $small.RelPermalink }} 128w, {{ $medium.RelPermalink }} 256w, {{ $large.RelPermalink }} 512w" sizes="112px" alt="" width="256" height="256"></span>
