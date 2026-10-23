@@ -1,5 +1,5 @@
 <footer class="site-footer"><div class="container footer-main">
-<div><a class="brand" href="{{ relURL "" }}"><span class="brand-mark">{{ partial "icon.html" "telescope" }}</span><span>Purdue Astronomy Club</span></a><p>{{ hugo.Data.site.footer_text }}</p></div>
+<div><a class="brand" href="{{ relURL "" }}">{{ partial "brand-mark.html" . }}<span>Purdue Astronomy Club</span></a><p>{{ hugo.Data.site.footer_text }}</p></div>
 <div class="footer-links">{{ if where site.RegularPages "Section" "sponsors" }}<a href="{{ relURL "sponsors/" }}">Sponsors & partners</a>{{ end }}<a href="{{ partial "events-url.html" . }}">Explore the calendar <span aria-hidden="true">↗</span></a><a href="{{ relURL "contact/" }}">Contact</a>
 {{ partial "social-links.html" . }}
 </div></div></footer>

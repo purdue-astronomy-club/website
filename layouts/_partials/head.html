@@ -16,7 +16,8 @@
 {{ if or (and .IsSection (eq .Section "events")) (eq .Layout "poster") }}{{ $ogImage = ((resources.Get "images/rigs.jpg") | fingerprint).Permalink }}{{ $ogAlt = "Two telescopes beneath a starry sky, with red light illuminating the equipment." }}{{ end }}
 <meta property="og:image" content="{{ $ogImage }}">
 <meta property="og:image:alt" content="{{ $ogAlt }}">
-<link rel="icon" href="{{ relURL "favicon.svg" }}" type="image/svg+xml">
+{{ $logo := resources.Get "images/purdue-astronomy-club.svg" | fingerprint }}
+<link rel="icon" href="{{ $logo.RelPermalink }}" type="image/svg+xml">
 <link rel="alternate" type="text/calendar" title="Purdue Astronomy Club calendar" href="{{ relURL "calendar.ics" }}">
 {{ $css := resources.Get "css/main.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
