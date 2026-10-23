@@ -4,7 +4,7 @@ The supplied JPEG is 170 × 170 pixels. The replacement is a 1254 × 1254 transp
 
 Master: `assets/images/purdue-astronomy-club.png`. A standalone copy is saved as `/home/sam/Downloads/pac-high-resolution.png`.
 
-Hugo creates 128, 256, and 512 pixel PNG variants for the website and separate 64 pixel favicon and 180 pixel touch icon. File names include content hashes so updated images receive new addresses. The header badge is displayed at 88 pixels and the footer badge at 112 pixels to give the curved lettering more space.
+Hugo creates 128, 256, and 512 pixel PNG variants for the website and separate 64 pixel favicon and 180 pixel touch icon. File names include content hashes so updated images receive new addresses. The header badge is displayed at 64 pixels and the footer badge at 112 pixels to give the curved lettering more space.
 
 ## Final edit prompt
 

@@ -55,7 +55,7 @@ test('a GitHub Pages project path loads styles, photos, calendar data and intern
     await page.setViewportSize({width: 1440, height: 1000});
     await page.goto(base);
     await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(8, 12, 16)');
-    await expect(page.locator('.brand-mark').first()).toHaveCSS('width', '88px');
+    await expect(page.locator('.brand-mark').first()).toHaveCSS('width', '64px');
     await page.locator('.brand-mark img').evaluateAll(images => Promise.all(images.map(img => img.decode())));
     await page.locator('.hero-image').evaluate(img => img.decode());
     if (browserName === 'chromium') await page.screenshot({path: 'docs/screenshots/project-home-desktop.jpg', type: 'jpeg', quality: 90});
