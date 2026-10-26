@@ -7,6 +7,8 @@ import re
 from content import ROOT, read_record
 from site_config import base_url
 
+MAX_SITE_BYTES = 1_000_000_000  # GitHub Pages published-site limit.
+
 class Links(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -29,6 +31,9 @@ def validate(public=ROOT/'public'):
         if not file.name.startswith('_') and read_record(file)[0].get('draft', True):
             draft_paths.append('/'+file.parent.name+'/'+file.stem+'/')
     files = list(public.rglob('*'))
+    total_bytes = sum(file.stat().st_size for file in files if file.is_file())
+    if total_bytes > MAX_SITE_BYTES:
+        errors.append('Published site exceeds the GitHub Pages 1 GB limit; archive photos or move full-resolution images to larger hosting.')
     for file in files:
         if not file.is_file() or file.suffix not in {'.html', '.js', '.json', '.xml', '.txt', '.css', '.ics'}:
             continue
@@ -63,7 +68,7 @@ def validate(public=ROOT/'public'):
                 errors.append(f'{file.relative_to(public)}: broken link/image {link}')
     if errors:
         raise ValueError('\n'.join(errors[:100]))
-    print(f'Public output checks passed: {len(files)} files; no broken internal links or draft/private references.')
+    print(f'Public output checks passed: {len(files)} files, {total_bytes / 1_000_000:.1f} MB; no broken internal links or draft/private references.')
 
 if __name__ == '__main__':
     validate()

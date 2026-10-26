@@ -40,7 +40,8 @@ class IntegrationTests(unittest.TestCase):
                 (root/'content'/section/f'{slug}.md').write_text('---\n'+yaml.safe_dump(record)+'---\nFixture rich text body.'+('\n\n![Fixture inline photo](/uploads/fixture-0.jpg)\n\n[Fixture link](/photo-prep/)' if section=='announcements' else ''))
             photos=[]
             for i in range(3):
-                image=f'/uploads/fixture-{i}.jpg'
+                extension = ['jpg', 'tif', 'png'][i]
+                image=f'/uploads/fixture-{i}.{extension}'
                 Image.new('RGB',(800,600),(30+i*50,40,80)).save(root/'static'/image.lstrip('/'))
                 photos.append({'image':image,'alt':f'Fixture image {i}','caption':f'Fixture caption {i}','credit':f'Test contributor {i}'})
             event={'title':'Fixture event','summary':'Fixture summary','draft':False,'category':'workshop','calendar_type':'joint','status':'scheduled','start_date':'2040-10-22','start_time':'19:00','end_time':'21:00','all_day':False,'cover_image':photos[0]['image'],'cover_alt':photos[0]['alt'],'related_album_slug':'fixture-album'}
@@ -52,7 +53,7 @@ class IntegrationTests(unittest.TestCase):
             write('announcements','fixture-news',{'title':'Fixture announcement','draft':False,'publish_date':'2020-01-01','summary':'Fixture news','image':photos[1]['image'],'image_alt':photos[1]['alt']})
             write('announcements','future-news',{'title':'Future fixture','draft':False,'publish_date':'2099-01-01','summary':'Should be scheduled'})
             def build():
-                generate(root);optimize(root)
+                optimize(root);generate(root)
                 subprocess.run([hugo,'--source',str(root),'--minify','--cleanDestinationDir'],check=True,capture_output=True)
                 validate(root/'public')
             build()
@@ -66,6 +67,11 @@ class IntegrationTests(unittest.TestCase):
             self.assertIn('Fixture image',homepage)
             self.assertIn('Joint event',(root/'public/events/fixture-event/index.html').read_text())
             album=(root/'public/albums/fixture-album/index.html').read_text()
+            metadata=json.loads((root/'data/generated/images.json').read_text())
+            self.assertIn(metadata['/uploads/fixture-1.tif']['full'],album)
+            self.assertFalse((root/'public/uploads/fixture-1.tif').exists())
+            with Image.open(root/'public'/metadata['/uploads/fixture-1.tif']['full'].lstrip('/')) as full:
+                self.assertEqual(full.size,(800,600))
             for i in range(3):
                 self.assertIn(f'Fixture caption {i}',album)
                 self.assertIn(f'Test contributor {i}',album)
@@ -88,7 +94,7 @@ class IntegrationTests(unittest.TestCase):
                 self.assertTrue(any(url.startswith('/website/events/?v=') for url in parser.links))
                 records=json.loads((root/'public/events.json').read_text())
                 self.assertEqual(records[0]['url'],'/website/events/fixture-event/')
-                self.assertEqual(records[0]['coverImage'],'/website/uploads/fixture-0.jpg')
+                self.assertTrue(records[0]['coverImage'].startswith('/website/media/'))
                 self.assertIn('https://example.github.io/website/events/fixture-event/',(root/'public/calendar.ics').read_text())
                 news=Links();news.feed((root/'public/announcements/fixture-news/index.html').read_text())
                 self.assertIn('/website/photo-prep/',news.links)

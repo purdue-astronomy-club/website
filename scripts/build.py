@@ -1,6 +1,5 @@
 """The same build entry point locally and on GitHub Actions."""
 import os
-import shutil
 import subprocess
 from content import ROOT
 from build_calendar import generate
@@ -16,9 +15,7 @@ sync()
 config = settings()
 if config.get('enabled') and config.get('meteor_showers',True) and not os.environ.get('PAC_OFFLINE'):
     refresh()
-generate()
 optimize()
+generate()
 subprocess.run([os.environ.get('HUGO_BIN', 'hugo'), '--gc', '--minify', '--cleanDestinationDir', '--baseURL', base_url()], check=True)
-if (ROOT/'.generated/uploads').exists():
-    shutil.copytree(ROOT/'.generated/uploads', ROOT/'public/uploads', dirs_exist_ok=True)
 validate(ROOT/'public')

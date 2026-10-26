@@ -9,7 +9,7 @@
       "photographer": "Sam Guber",
       "alt": "Astrophotograph of Cygnus Loop by Sam Guber.",
       "caption": "",
-      "image": "/uploads/drive-gallery/drive-e6313bc9f7447eed2046.webp",
+      "image": "/uploads/drive-gallery/drive-e6313bc9f7447eed2046.jpg",
       "draft": false,
       "permission_to_publish": true,
       "featured": false
@@ -122,5 +122,6 @@
       "permission_to_publish": true,
       "featured": false
     }
-  ]
+  ],
+  "pipeline_version": 2
 }

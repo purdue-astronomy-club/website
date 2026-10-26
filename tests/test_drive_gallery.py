@@ -124,6 +124,25 @@ class DriveGalleryTests(unittest.TestCase):
         self.assertEqual(list((self.root/'static/uploads/drive-gallery').glob('*')), [])
         self.assertTrue((self.root/'static/uploads/cms-photo.jpg').exists())
 
+    def test_old_resized_cache_is_redownloaded_even_when_drive_file_is_unchanged(self):
+        self.run_sync()
+        path = self.root/'.generated/drive-gallery/manifest.json'
+        manifest = json.loads(path.read_text())
+        manifest.pop('pipeline_version')
+        path.write_text(json.dumps(manifest))
+        self.run_sync()
+        self.assertEqual(self.client.downloads, ['photo-one', 'photo-one'])
+
+    def test_drive_tiff_mime_is_imported(self):
+        for mime in ['image/tiff', 'image/x-tiff']:
+            payload = BytesIO()
+            Image.new('RGB', (4200, 64), 'navy').save(payload, 'TIFF')
+            self.client.files = [dict(metadata('tiff-photo-'+mime[-4:], 'jane_doe_M31.TIF'), mimeType=mime)]
+            self.client.download = Mock(return_value=payload.getvalue())
+            record = self.run_sync()[0]
+            with Image.open(self.root/'static'/record['image'].lstrip('/')) as photo:
+                self.assertEqual(photo.size, (4200, 64))
+
     def test_cms_corrections_and_hidden_photos(self):
         self.client.files.append(metadata('photo-two', 'alex_smith_orion_nebula.jpg'))
         self.config['photos'] = [
@@ -176,7 +195,7 @@ class DriveGalleryTests(unittest.TestCase):
         with self.assertRaises(DriveError):
             self.run_sync()
 
-    def test_full_size_drive_original_is_reduced_before_the_cms_image_pipeline(self):
+    def test_full_size_drive_original_survives_the_entire_image_pipeline(self):
         buffer = BytesIO()
         Image.new('RGB', (3600, 1800), (20, 35, 70)).save(buffer, 'JPEG')
         payload = buffer.getvalue() + b'\0' * (16 * 1024 * 1024)
@@ -185,8 +204,12 @@ class DriveGalleryTests(unittest.TestCase):
         record = self.run_sync()[0]
         prepared = self.root/'static'/record['image'].lstrip('/')
         with Image.open(prepared) as photo:
-            self.assertEqual(photo.size, (2400, 1200))
-        self.assertLess(prepared.stat().st_size, 15 * 1024 * 1024)
+            self.assertEqual(photo.size, (3600, 1800))
+        optimize(self.root)
+        images = json.loads((self.root/'data/generated/images.json').read_text())
+        with Image.open(self.root/'.generated'/images[record['image']]['full'].lstrip('/')) as full:
+            self.assertEqual(full.size, (3600, 1800))
+        self.assertEqual(prepared.read_bytes(), (self.root/'.generated'/images[record['image']]['full'].lstrip('/')).read_bytes())
 
     def test_disabled_and_offline_withdraw_only_imported_pages(self):
         self.run_sync()
@@ -272,10 +295,9 @@ class DriveGalleryTests(unittest.TestCase):
         self.save_config()
         record = self.run_sync()[0]
         def build():
-            generate(self.root)
             optimize(self.root)
+            generate(self.root)
             subprocess.run([hugo, '--source', str(self.root), '--minify', '--cleanDestinationDir'], check=True, capture_output=True)
-            shutil.copytree(self.root/'.generated/uploads', self.root/'public/uploads', dirs_exist_ok=True)
             validate(self.root/'public')
         build()
         self.assertEqual(json.loads((self.root/'public/events.json').read_text()), [])

@@ -1,0 +1,2 @@
+{{- $meta := index hugo.Data.generated.images . -}}
+{{- return (partial "site-url.html" ($meta.full | default .)) -}}

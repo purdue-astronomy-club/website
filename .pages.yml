@@ -8,6 +8,8 @@ media:
   - jpeg
   - png
   - webp
+  - tif
+  - tiff
 content:
 - name: events
   label: Events and Calendar
@@ -478,7 +480,7 @@ content:
     list: true
     fields:
     - name: filename
-      label: Exact Drive filename, including .jpg / .png / .webp
+      label: Exact Drive filename, including .jpg / .png / .tif / .tiff / .webp
       type: string
       required: true
     - name: title

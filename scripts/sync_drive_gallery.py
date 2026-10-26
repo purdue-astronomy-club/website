@@ -9,17 +9,12 @@ import re
 import shutil
 import tempfile
 import unicodedata
-import warnings
-
-from PIL import Image, ImageOps
 import yaml
 from content import ROOT
+from gallery_images import EXTENSIONS, MAX_BYTES, MAX_PIXELS, PIPELINE_VERSION, read_image, save_full
 
 SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
-MIMES = {'image/jpeg', 'image/png', 'image/webp'}
-# Drive keeps full-size originals; CMS uploads retain their separate 15 MB limit.
-MAX_BYTES = 200 * 1024 * 1024
-MAX_PIXELS = 120_000_000
+MIMES = {'image/jpeg', 'image/png', 'image/webp', 'image/tiff', 'image/x-tiff'}
 MAX_PHOTOS = 1000
 
 
@@ -37,8 +32,8 @@ def parse_filename(filename):
     """The first two underscore-separated fields are names; all remaining fields are target."""
     if any(unicodedata.category(c).startswith('C') for c in filename) or '/' in filename or '\\' in filename:
         raise ValueError('Use a plain photo filename')
-    if Path(filename).suffix.lower() not in {'.jpg', '.jpeg', '.png', '.webp'}:
-        raise ValueError('Use JPEG, PNG or WebP')
+    if Path(filename).suffix.lower() not in EXTENSIONS:
+        raise ValueError('Use JPEG, PNG, TIFF or WebP')
     parts = [part.strip() for part in unicodedata.normalize('NFC', Path(filename).stem).split('_')]
     if len(parts) < 3 or not all(parts):
         raise ValueError('Use firstname_lastname_target.jpg, with underscores between target words')
@@ -117,31 +112,14 @@ class DriveClient:
 
 
 def prepare_image(payload, destination):
-    """Only an oriented, resized, metadata-free still image survives the import."""
+    """Cache an oriented, full-resolution, lossless copy without private metadata."""
     if len(payload) > MAX_BYTES:
-        raise DriveError('A Drive photo exceeds 200 MB. Prepare a smaller JPEG, PNG or WebP.')
-    with warnings.catch_warnings():
-        # Check our explicit ceiling before decoding; Pillow's default warning
-        # begins below that ceiling and its larger hard limit remains active.
-        warnings.simplefilter('ignore', Image.DecompressionBombWarning)
-        try:
-            with Image.open(BytesIO(payload)) as opened:
-                if opened.format not in {'JPEG', 'PNG', 'WEBP'} or getattr(opened, 'n_frames', 1) != 1:
-                    raise ValueError('Use a still JPEG, PNG or WebP')
-                if opened.width * opened.height > MAX_PIXELS:
-                    raise ValueError('Photo exceeds 120 megapixels')
-                mode = 'RGBA' if 'A' in opened.getbands() or 'transparency' in opened.info else 'RGB'
-                if opened.format == 'JPEG':
-                    opened.draft(mode, (2400, 2400))
-                oriented = ImageOps.exif_transpose(opened)
-                oriented.thumbnail((2400, 2400), Image.Resampling.LANCZOS)
-                oriented = oriented.convert(mode)
-                # A new image has no inherited EXIF, comments or other embedded metadata.
-                clean = Image.new(mode, oriented.size)
-                clean.paste(oriented)
-                clean.save(destination, 'WEBP', quality=90, method=6)
-        except Exception:
-            raise DriveError('A gallery photo could not be prepared. Use a valid still JPEG/PNG/WebP, at most 200 MB and 120 megapixels.') from None
+        raise DriveError('A Drive photo exceeds 200 MB. Prepare a smaller JPEG, PNG, TIFF or WebP.')
+    try:
+        with read_image(BytesIO(payload)) as photo:
+            return save_full(photo, destination)
+    except Exception:
+        raise DriveError('A gallery photo could not be prepared. Use a valid still JPEG/PNG/TIFF/WebP, at most 200 MB and 120 megapixels.') from None
 
 
 def settings(root):
@@ -162,7 +140,8 @@ def materialize(root, records, cache):
     uploads.mkdir(parents=True, exist_ok=True)
     for record in records:
         ref = record['reference']
-        shutil.copy2(cache/'images'/f'{ref}.webp', uploads/f'{ref}.webp')
+        filename = ref + Path(record['image']).suffix
+        shutil.copy2(cache/'images'/filename, uploads/filename)
         frontmatter = {k: v for k, v in record.items() if k not in {'reference', 'fingerprint', 'filename'}}
         (content/f'{ref}.md').write_text('---\n'+yaml.safe_dump(frontmatter, allow_unicode=True, sort_keys=False)+'---\n')
 
@@ -234,7 +213,7 @@ def sync(root=ROOT, client=None, offline=None):
     previous = {}
     if (cache/'manifest.json').exists():
         manifest = json.loads((cache/'manifest.json').read_text())
-        if manifest.get('folder_id') == folder_id:
+        if manifest.get('folder_id') == folder_id and manifest.get('pipeline_version') == PIPELINE_VERSION:
             previous = {p['reference']: p for p in manifest['photos']}
     root.joinpath('.generated').mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='drive-stage-', dir=root/'.generated') as tmp:
@@ -264,12 +243,14 @@ def sync(root=ROOT, client=None, offline=None):
                 raise DriveError(f'{filename!r} exceeds 200 MB; prepare a smaller copy.')
             ref = 'drive-'+sha256(file_id.encode()).hexdigest()[:20]
             fingerprint = sha256(json.dumps([file.get('md5Checksum'), file.get('modifiedTime'), file.get('size')]).encode()).hexdigest()
-            output = stage/'images'/f'{ref}.webp'
             old = previous.get(ref, {})
-            if file.get('md5Checksum') and old.get('fingerprint') == fingerprint and (cache/'images'/output.name).is_file():
-                shutil.copy2(cache/'images'/output.name, output)
+            suffix = Path(old.get('image', '')).suffix
+            cached = cache/'images'/(ref+suffix)
+            if file.get('md5Checksum') and old.get('fingerprint') == fingerprint and suffix in {'.webp', '.png'} and cached.is_file():
+                output = stage/'images'/cached.name
+                shutil.copy2(cached, output)
             else:
-                prepare_image(client.download(file_id), output)
+                output = prepare_image(client.download(file_id), stage/'images'/ref)
             title = str(override.get('title') or parsed['title'])
             photographer = str(override.get('photographer') or parsed['photographer'])
             records.append({
@@ -277,11 +258,11 @@ def sync(root=ROOT, client=None, offline=None):
                 'title': title, 'photographer': photographer,
                 'alt': str(override.get('alt') or f'Astrophotograph of {title} by {photographer}.'),
                 'caption': str(override.get('caption') or ''),
-                'image': f'/uploads/drive-gallery/{ref}.webp',
+                'image': f'/uploads/drive-gallery/{output.name}',
                 'draft': False, 'permission_to_publish': True,
                 'featured': bool(override.get('featured', config.get('featured', False))),
             })
-        manifest = {'folder_id': folder_id, 'synced_at': datetime.now(timezone.utc).isoformat(), 'photos': records}
+        manifest = {'folder_id': folder_id, 'pipeline_version': PIPELINE_VERSION, 'synced_at': datetime.now(timezone.utc).isoformat(), 'photos': records}
         (stage/'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
         # Publish/cache only the complete sanitized snapshot, never a partial download.
         backup = cache.with_name('drive-gallery-previous')

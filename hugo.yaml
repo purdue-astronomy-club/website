@@ -31,3 +31,9 @@ module:
     target: content/astronomy
   - source: .generated/content/drive-gallery
     target: content/astrophotography
+  - source: static
+    target: static
+    files:
+    - '! uploads/**'
+  - source: .generated/uploads
+    target: static/uploads

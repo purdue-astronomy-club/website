@@ -73,19 +73,19 @@ Prepare web copies first. The optional [photo preparation tool](https://purdueas
 6. Optionally enter the related event’s saved filename without `.md`. To link back from the event, set that event’s Later photo album slug to the album filename.
 7. Turn Draft off and Save. The album appears on Gallery automatically, and each of its photos joins the homepage carousel with its own credit.
 
-On the website, select a photo for the larger view. Close with the Close photo button or Escape; keyboard focus returns to its thumbnail.
+On the website, select a photo for the larger view. Choose **Zoom to 100%** to inspect full-size detail and scroll or swipe to pan. **Fit to screen** restores the overview; **Open full-resolution image** opens the file directly. Close with the Close photo button or Escape; keyboard focus returns to its thumbnail.
 
 ## Share astrophotography
 
-Choose **Astrophotography Showcase → New**. Add a celestial target/title, processed JPEG/WebP/PNG, image description, photographer credit, publication permission, and optional capture date/telescope/camera/filters/exposure. Add a caption and story, turn Draft off, and Save. The image appears in the gallery and homepage carousel automatically.
+Choose **Astrophotography Showcase → New**. Add a celestial target/title, processed JPEG/PNG/TIFF/WebP, image description, photographer credit, publication permission, and optional capture date/telescope/camera/filters/exposure. Add a caption and story, turn Draft off, and Save. The image appears in the gallery and homepage carousel automatically.
 
-Do not upload camera RAW/FITS/processing project files. Aim for images about 1,600–2,400 pixels along the long edge and a few hundred KB when possible. The site creates responsive WebP derivatives during the build. Uploads over 15 MB fail validation.
+Upload at the original processed dimensions for the highest resolution. The site creates responsive previews and a full-size viewing copy. JPEG, PNG, TIFF and WebP still images up to 200 MiB and 120 megapixels are supported; CMS/provider limits can be lower, so use Drive for large exports. Do not upload camera RAW/FITS/processing project files. See [gallery image quality](GALLERY_IMAGES.md) for color-depth and hosting limits.
 
 ## Automatic photos from Google Drive
 
 The ten photos already supplied in **Member_Photos** are included in the website now, each credited to Sam Guber; all rotate through the homepage carousel. They display without connecting Google credentials. The following setup is for refreshing the gallery automatically as more files arrive.
 
-After an administrator completes [Drive gallery setup](DRIVE_GALLERY_SETUP.md), upload approved processed photos directly to [Member_Photos](https://drive.google.com/drive/folders/1ovIgPYF6oufpNY4W8Q5RCMW9IeUFvaXR) under Shared with me. Name each file **firstname_lastname_target_words.jpg**. For example, `jane_doe_andromeda_galaxy.jpg` appears as **Andromeda Galaxy**, with **Image by Jane Doe**. JPEG, PNG and WebP still images are supported, up to 200 MB and 120 megapixels per Drive original. The website automatically resizes them; put them directly in the folder rather than in subfolders. The 15 MB limit above applies to manual CMS uploads.
+After an administrator completes [Drive gallery setup](DRIVE_GALLERY_SETUP.md), upload approved processed photos directly to [Member_Photos](https://drive.google.com/drive/folders/1ovIgPYF6oufpNY4W8Q5RCMW9IeUFvaXR) under Shared with me. Name each file **firstname_lastname_target_words.jpg**. For example, `jane_doe_andromeda_galaxy.jpg` appears as **Andromeda Galaxy**, with **Image by Jane Doe**. JPEG, PNG, TIFF and WebP still images are supported, up to 200 MiB and 120 megapixels per original. The website preserves full dimensions and automatically creates responsive previews; put files directly in the folder rather than in subfolders.
 
 The website checks every six hours. To publish sooner, use **GitHub → Actions → Build and deploy website → Run workflow → main**. Renaming the same Drive file updates its displayed title/credit; moving it out of the folder removes it after a successful sync. Uploads there are intended for public display with the photographer's permission.
 

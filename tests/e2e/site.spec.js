@@ -90,10 +90,60 @@ test('published gallery photo retains its title and credit through the larger vi
  expect(await photo.evaluate(img=>img.naturalWidth)).toBeGreaterThan(0);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
  const larger=page.locator('.astro-showcase [data-lightbox]');
+ const expectedWidth=Number(await photo.getAttribute('width'));
+ const expectedHeight=Number(await photo.getAttribute('height'));
  await larger.click();
- await expect(page.getByRole('dialog',{name:'Photo viewer'})).toContainText(credit.replace('Image by ','Photo: '));
+ const viewer=page.getByRole('dialog',{name:'Photo viewer'});
+ await expect(viewer).toContainText(credit.replace('Image by ','Photo: '));
+ const full=viewer.locator('img');
+ await full.evaluate(img=>img.decode());
+ expect(await full.evaluate(img=>[img.naturalWidth,img.naturalHeight])).toEqual([expectedWidth,expectedHeight]);
+ await expect(viewer.getByRole('link',{name:'Open full-resolution image'})).toHaveAttribute('href',await larger.evaluate(link=>link.href));
+ expect(await full.evaluate(img=>img.getBoundingClientRect().width)).toBeLessThanOrEqual(390);
+ await viewer.getByRole('button',{name:'Zoom to 100%',exact:true}).click();
+ await expect(viewer.getByRole('button',{name:'Fit to screen',exact:true})).toHaveAttribute('aria-pressed','true');
+ expect(await full.evaluate(img=>img.getBoundingClientRect().width)).toBe(expectedWidth);
+ const viewport=viewer.locator('.lightbox-viewport');
+ await viewport.evaluate(el=>el.scrollTo(100,100));
+ expect(await viewport.evaluate(el=>el.scrollLeft)).toBeGreaterThan(0);
+ await viewer.getByRole('button',{name:'Fit to screen',exact:true}).click();
+ expect(await full.evaluate(img=>img.getBoundingClientRect().width)).toBeLessThanOrEqual(390);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
  await page.keyboard.press('Escape');
  await expect(larger).toBeFocused();
+});
+test('gallery full-resolution link works without JavaScript',async({browser})=>{
+ const context=await browser.newContext({javaScriptEnabled:false});
+ const page=await context.newPage();
+ await page.goto('/gallery/');
+ await page.locator('#astrophotography .gallery-card > a').first().click();
+ const link=page.locator('[data-lightbox]');
+ const href=await link.getAttribute('href');
+ const response=await page.request.get(href);
+ expect(response.ok()).toBeTruthy();
+ expect(response.headers()['content-type']).toMatch(/^image\/(jpeg|webp|png)$/);
+ await link.click();
+ expect(new URL(page.url()).pathname).toBe(href);
+ await context.close();
+});
+test('every published gallery photo decodes at its full source dimensions',async({page})=>{
+ test.setTimeout(120000);
+ await page.goto('/gallery/');
+ const photos=await page.locator('#astrophotography .gallery-card > a').evaluateAll(links=>links.map(link=>link.href));
+ expect(photos.length).toBeGreaterThan(0);
+ for(const url of photos){
+  await page.goto(url);
+  const preview=page.locator('.astro-showcase img');
+  const dimensions=[Number(await preview.getAttribute('width')),Number(await preview.getAttribute('height'))];
+  await page.locator('[data-lightbox]').click();
+  const viewer=page.getByRole('dialog',{name:'Photo viewer'});
+  const full=viewer.locator('img');
+  await full.evaluate(img=>img.decode());
+  expect(await full.evaluate(img=>[img.naturalWidth,img.naturalHeight])).toEqual(dimensions);
+  expect(await full.evaluate(img=>{const box=img.getBoundingClientRect();const view=img.parentElement;return box.width<=view.clientWidth+1&&box.height<=view.clientHeight+1})).toBeTruthy();
+  await expect(viewer.getByRole('button',{name:'Zoom to 100%',exact:true})).toBeEnabled();
+  await page.keyboard.press('Escape');
+ }
 });
 test('calculated moon has an icon, source details and an invitation',async({page})=>{
  const records=await (await page.request.get('/events.json')).json();

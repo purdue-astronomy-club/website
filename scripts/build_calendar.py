@@ -52,7 +52,11 @@ def generate(root=ROOT):
     generated.mkdir(parents=True, exist_ok=True)
     (generated/'sky.json').write_text(json.dumps(status))
     (generated/'events.json').write_text(json.dumps(events, indent=2, ensure_ascii=False))
-    public_events = [{**e, 'url': site_path(e['url'], root), 'coverImage': site_path(e['coverImage'], root)} for e in events]
+    images_path = generated/'images.json'
+    images = json.loads(images_path.read_text()) if images_path.exists() else {}
+    def browser_image(path):
+        return site_path(images.get(path, {}).get('src', path), root)
+    public_events = [{**e, 'url': site_path(e['url'], root), 'coverImage': browser_image(e['coverImage'])} for e in events]
     (root/'static/events.json').write_text(json.dumps(public_events, ensure_ascii=False))
     for section in ['events', 'astronomy']:
         shutil.rmtree(root/'static'/section, ignore_errors=True)
@@ -65,7 +69,7 @@ def generate(root=ROOT):
     for m in months:
         n = dict(m)
         if n.get('banner_image'):
-            n['banner_image'] = site_path(n['banner_image'], root)
+            n['banner_image'] = browser_image(n['banner_image'])
         if not (n.get('permission_to_publish') and n.get('banner_image')):
             for key in ['banner_image', 'banner_alt', 'photographer']:
                 n.pop(key, None)

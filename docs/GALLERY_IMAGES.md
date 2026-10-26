@@ -1,0 +1,17 @@
+# Gallery image quality
+
+Upload processed JPG/JPEG, PNG, TIF/TIFF or WebP files at their original dimensions. Both Pages CMS and the Drive importer accept still images up to **200 MiB (209,715,200 bytes)** and **120 megapixels**. CMS/provider upload limits can be lower; use Drive for files too large for the editor. RAW, FITS, animations and multipage TIFF are unsupported.
+
+Gallery cards and detail pages use responsive previews up to 3,600 pixels wide. Their source sets also include the full-resolution copy, so high-density screens can request more detail. Opening an album or astrophotography photo loads the full-resolution copy. **Zoom to 100%** shows individual source pixels; scroll or swipe to pan, then choose **Fit to screen**. **Open full-resolution image** opens the file directly. Escape closes the viewer and returns focus. Clicking a photo still opens its full-size file when JavaScript is disabled.
+
+Full-size copies retain every source pixel dimension after orientation, without upscaling. WebP is encoded losslessly, including transparency; embedded ICC color profiles are retained. EXIF, location, comments and other private embedded metadata are removed. Images exceeding WebP's 16,383-pixel dimension limit use lossless PNG instead. [Pillow format limits](https://pillow.readthedocs.io/en/stable/reference/limits.html).
+
+Spatial resolution and color depth are separate. Pillow decodes multichannel TIFF into 8-bit RGB/RGBA for browser display; these copies preserve dimensions but are not archival 16/32-bit color masters. Supported 16-bit grayscale TIFF/PNG retains its levels in the full PNG and uses 8-bit previews. Keep original scientific/processing files separately. [Pillow image modes](https://pillow.readthedocs.io/en/stable/handbook/concepts.html).
+
+The complete published website must fit within GitHub Pages' **1 GB** limit. The build checks total output size and stops with an actionable error if it exceeds 1,000,000,000 bytes, leaving the previous deployment live. Lossless high-resolution copies can be larger than their uploaded JPEGs. Archive older photos or use larger image hosting if the gallery outgrows Pages. A visitor's browser memory and device can also limit decoding very large images. [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits).
+
+## Implementation and existing photos
+
+`gallery_images.py` shares validation, orientation and lossless encoding across Drive and CMS uploads. `optimize_images.py` writes responsive previews, full copies and `data/generated/images.json`. Hugo mounts sanitized `.generated/uploads` files instead of the source upload directory, so TIFF and private originals are never served accidentally. Calendar JSON and social images also use browser-compatible previews. Always use `scripts/build.py` after changing photos.
+
+The ten included launch photos were restored from their Drive originals on October 24, 2026. The largest now retains **12,262 × 8,183 pixels**, replacing its 2,400 × 1,602 copy. The large JPEG snapshot retains its original compressed image data and ICC profile with private metadata removed, keeping the source file below GitHub's per-file repository limit. Other snapshot copies are lossless WebP at full dimensions. Live sync invalidates the old resized image cache using the pipeline version, so unchanged Drive files are downloaded again once after this update.

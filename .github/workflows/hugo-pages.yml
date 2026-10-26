@@ -39,8 +39,8 @@ jobs:
       - uses: actions/cache@v6.1.0
         with:
           path: .generated/drive-gallery
-          key: drive-gallery-v1-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: drive-gallery-v1-
+          key: drive-gallery-v2-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: drive-gallery-v2-
       - run: python scripts/build.py
         env:
           HUGO_BASEURL: ${{ steps.pages.outputs.base_url }}/

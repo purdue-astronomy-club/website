@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 import re
 import yaml
 from sky_icons import PLANETS, icon_for
+from gallery_images import EXTENSIONS
 
 ROOT = Path(__file__).resolve().parents[1]
 TZ = ZoneInfo('America/Indiana/Indianapolis')
@@ -81,8 +82,8 @@ def image(root, value, alt, required=False):
         raise ValueError(f'Please describe image {value} in its alt text field')
     if not str(value).startswith('/uploads/') or '..' in Path(value).parts:
         raise ValueError('Select images from the CMS Media library (/uploads/)')
-    if Path(value).suffix.lower() not in {'.jpg', '.jpeg', '.png', '.webp'}:
-        raise ValueError('Use JPEG, PNG, or WebP images')
+    if Path(value).suffix.lower() not in EXTENSIONS:
+        raise ValueError('Use JPEG, PNG, TIFF or WebP images')
     file = root / 'static' / value.lstrip('/')
     if not file.is_file():
         raise ValueError(f'Image file is missing: {value}; upload it or select another image')

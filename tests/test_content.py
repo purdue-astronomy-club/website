@@ -161,7 +161,7 @@ class ContentTests(unittest.TestCase):
         self.assertIn('360w',images['/uploads/test0.jpg']['srcset'])
         with Image.open(self.root/'static'/images['/uploads/test2.png']['src'].lstrip('/')) as transparent:
             self.assertEqual(transparent.getpixel((0,0))[3],0)
-        with Image.open(self.root/'.generated/uploads/test0.jpg') as clean:
+        with Image.open(self.root/'.generated'/images['/uploads/test0.jpg']['full'].lstrip('/')) as clean:
             self.assertFalse(clean.getexif())
     def test_album_missing_permission_rejected(self):
         self.write({'title':'Test','draft':False,'event_date':'2026-10-22','photos':[]},'albums','test-album')
