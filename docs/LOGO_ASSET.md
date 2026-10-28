@@ -2,9 +2,9 @@
 
 ## BoilerLink link logo
 
-`static/icons/boilerlink.png` is the original, unmodified 1257 × 225 PNG served as BoilerLink's official header logo, downloaded on 2026-10-28. BoilerLink currently uses the Purdue University signature (Motion P and wordmark).
+`static/icons/boilerlink.svg` contains only the Purdue Motion P, extracted from Purdue's official vector logo on 2026-10-28. The original paths and colors are preserved, with a transparent background and no wordmark.
 
-Source: [BoilerLink header configuration](https://boilerlink.purdue.edu/topbar/context?path=%2F), which identifies [this logo file](https://se-images.campuslabs.com/clink/images/36b063d1-6c66-44cd-9269-3133d424157dac4e863d-e439-4db2-93ba-2ec6f609e380.png). The website serves a local copy, preserves its proportions and colors, and labels the link BoilerLink.
+Source: [Purdue Brand Studio's vector logo](https://www.purdue.edu/brand-studio/wp-content/themes/purdue-home-theme-beta/imgs/PU-H-light.svg). The website displays the P at 32 pixels wide inside the same 44 × 44 pixel link target as the other social icons. The accessible label and tooltip identify Purdue BoilerLink.
 
 ## Club badge
 

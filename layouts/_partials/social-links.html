@@ -1,5 +1,5 @@
 <div class="social-links" aria-label="Club links">
 {{ with hugo.Data.site.public_email }}<a class="social-link" href="mailto:{{ . }}" aria-label="Email the club" title="Email the club">{{ partial "social-icon.html" "email" }}</a>{{ end }}
 {{ range slice "instagram" "discord" "github" }}{{ $label := . | title }}{{ if eq . "github" }}{{ $label = "GitHub" }}{{ end }}{{ $icon := . }}{{ with index hugo.Data.site . }}<a class="social-link" href="{{ . }}" aria-label="{{ $label }}" title="{{ $label }}">{{ partial "social-icon.html" $icon }}</a>{{ end }}{{ end }}
-{{ with hugo.Data.site.boilerlink }}<a class="social-link social-link-boilerlink" href="{{ . }}" aria-label="Purdue BoilerLink" title="Purdue BoilerLink"><img src="{{ partial "site-url.html" "/icons/boilerlink.png" }}" width="1257" height="225" alt="" loading="lazy"><span>BoilerLink</span></a>{{ end }}
+{{ with hugo.Data.site.boilerlink }}<a class="social-link social-link-boilerlink" href="{{ . }}" aria-label="Purdue BoilerLink" title="Purdue BoilerLink"><img src="{{ partial "site-url.html" "/icons/boilerlink.svg" }}" width="83" height="45" alt="" loading="lazy"></a>{{ end }}
 </div>
