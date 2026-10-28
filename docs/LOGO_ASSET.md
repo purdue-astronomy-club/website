@@ -1,5 +1,13 @@
 # Club logo asset
 
+## BoilerLink link logo
+
+`static/icons/boilerlink.png` is the original, unmodified 1257 × 225 PNG served as BoilerLink's official header logo, downloaded on 2026-10-28. BoilerLink currently uses the Purdue University signature (Motion P and wordmark).
+
+Source: [BoilerLink header configuration](https://boilerlink.purdue.edu/topbar/context?path=%2F), which identifies [this logo file](https://se-images.campuslabs.com/clink/images/36b063d1-6c66-44cd-9269-3133d424157dac4e863d-e439-4db2-93ba-2ec6f609e380.png). The website serves a local copy, preserves its proportions and colors, and labels the link BoilerLink.
+
+## Club badge
+
 The supplied JPEG is 170 × 170 pixels. The replacement is a 1254 × 1254 transparent PNG reconstructed with the built-in image generation tool. It preserves the club badge and spells “PURDUE” and “ASTRONOMY CLUB”; it is a reconstruction, not recovered original vector artwork.
 
 Master: `assets/images/purdue-astronomy-club.png`. A standalone copy is saved as `/home/sam/Downloads/pac-high-resolution.png`.

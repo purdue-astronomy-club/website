@@ -24,3 +24,4 @@
 @media(max-width:767px){.officer-profile{grid-template-columns:1fr;gap:30px}.officer-profile>img{max-width:380px}}
 
 .site-footer .brand-mark{width:112px;height:112px}
+.social-link-boilerlink{width:auto;gap:8px;font-size:.8rem}.social-link-boilerlink img{box-sizing:content-box;flex:none;width:90px;height:auto;padding:6px;background:#fff;border-radius:3px}

@@ -245,7 +245,7 @@ def collect(root=ROOT, now=None):
         image(root, home.get('hero_image'), home.get('hero_image_alt'))
         site = read_yaml(root/'data/site.yml')
         public_url(site.get('public_email'), email=True)
-        for key in ['instagram', 'discord', 'github']:
+        for key in ['instagram', 'discord', 'github', 'boilerlink']:
             public_url(site.get(key))
     except (ValueError, TypeError) as exc:
         errors.append(f'Website settings: {exc}')

@@ -678,6 +678,10 @@ content:
   - name: github
     label: Public club GitHub URL (if approved)
     type: string
+  - name: boilerlink
+    label: Purdue BoilerLink page URL
+    type: string
+    description: Paste the full https://boilerlink.purdue.edu/organization/... address for the club. Leave blank to hide the link.
   - name: footer_text
     label: Footer description
     type: text
