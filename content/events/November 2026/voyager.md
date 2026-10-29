@@ -7,6 +7,8 @@ status: scheduled
 calendar_type: pac
 category: social
 start_date: 2026-11-18
-start_time: 18:00
+start_time: 18:30
+end_time: 20:00
 all_day: false
+location: PHYS 238
 ---
