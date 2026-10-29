@@ -12,4 +12,5 @@ end_time: 22:00
 all_day: false
 location: PHYS 203
 cover_image: /uploads/mvtoc3fq-ysgf03es.jpg
+cover_alt: cover poster
 ---
