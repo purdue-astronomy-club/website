@@ -7,7 +7,7 @@ import unittest
 import yaml
 from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts'))
-from content import ROOT, TZ, collect, normalize, local_datetime, public_url, read_record
+from content import ROOT, TZ, collect, image, normalize, local_datetime, public_url, read_record
 from build_calendar import calendar_bytes, generate
 from optimize_images import optimize
 from icalendar import Calendar
@@ -28,6 +28,7 @@ class ContentTests(unittest.TestCase):
         self.temp.cleanup()
     def write(self, r, section='events', slug='test-event'):
         path=self.root/'content'/section/f'{slug}.md'
+        path.parent.mkdir(parents=True,exist_ok=True)
         path.write_text('---\n'+yaml.safe_dump(r)+'---\nFixture body.')
         return path
     def norm(self, **changes):
@@ -125,12 +126,23 @@ class ContentTests(unittest.TestCase):
         self.assertFalse(records[0]['upcoming'])
     def test_joint_category(self):
         self.assertEqual(self.norm(calendar_type='joint')['categoryLabel'],'Joint event')
-    def test_image_alt_missing_rejected(self):
+    def test_event_image_description_optional(self):
         Image.new('RGB',(20,20)).save(self.root/'static/uploads/test.jpg')
-        self.write(dict(BASE_EVENT,cover_image='/uploads/test.jpg',cover_alt=''))
-        with self.assertRaisesRegex(ValueError,'alt text'):collect(self.root)
+        for alt in [None, '', '  ', 'Members observing the sky']:
+            with self.subTest(alt=alt):
+                record=dict(BASE_EVENT,cover_image='/uploads/test.jpg')
+                if alt is not None:record['cover_alt']=alt
+                path=self.write(record)
+                path.write_text(path.read_text()+'\n\n![](/uploads/test.jpg)')
+                events,_=collect(self.root)
+                self.assertEqual(events[0]['coverImage'],'/uploads/test.jpg')
+                self.assertEqual(events[0]['coverAlt'],alt if alt is not None else '')
+    def test_other_image_descriptions_still_required(self):
+        Image.new('RGB',(20,20)).save(self.root/'static/uploads/test.jpg')
+        with self.assertRaisesRegex(ValueError,'alt text'):
+            image(self.root,'/uploads/test.jpg','')
     def test_missing_image_rejected(self):
-        self.write(dict(BASE_EVENT,cover_image='/uploads/missing.webp',cover_alt='A description'))
+        self.write(dict(BASE_EVENT,cover_image='/uploads/missing.webp'))
         with self.assertRaisesRegex(ValueError,'missing'):collect(self.root)
     def test_unsafe_url_rejected(self):
         for url in ['javascript:alert(1)','http://example.com','https://10.0.0.1/test','//example.com']:
@@ -166,10 +178,46 @@ class ContentTests(unittest.TestCase):
     def test_album_missing_permission_rejected(self):
         self.write({'title':'Test','draft':False,'event_date':'2026-10-22','photos':[]},'albums','test-album')
         with self.assertRaisesRegex(ValueError,'permission'):collect(self.root)
+    def test_album_photo_descriptions_optional(self):
+        Image.new('RGB',(20,20)).save(self.root/'static/uploads/test.jpg')
+        album={'title':'Test album','draft':False,'event_date':'2026-10-22',
+               'cover_image':'/uploads/test.jpg','permission_to_publish':True,
+               'photos':[{'image':'/uploads/test.jpg','credit':'Test photographer'}]}
+        self.write(album,'albums','test-album')
+        collect(self.root)
+        album['photos'][0]['image']='/uploads/missing.jpg'
+        self.write(album,'albums','test-album')
+        with self.assertRaisesRegex(ValueError,'missing'):collect(self.root)
+        album['photos'][0]['image']=''
+        self.write(album,'albums','test-album')
+        with self.assertRaisesRegex(ValueError,'select an image'):collect(self.root)
     def test_new_title_keeps_filename_url(self):
         a=self.norm();b=self.norm(title='An edited title')
         self.assertEqual(a['url'],b['url'])
         self.assertEqual(a['id'],b['id'])
+    def test_event_folder_move_preserves_calendar_identity_and_revision(self):
+        import os
+        path=self.write(BASE_EVENT,slug='test_event')
+        os.utime(path,(1700000000,1700000000))
+        before=collect(self.root)[0][0]
+        before_ics=calendar_bytes([before],self.root)
+        destination=path.parent/'November 2026'/'week-2'/path.name
+        destination.parent.mkdir(parents=True)
+        path.rename(destination)
+        after=collect(self.root)[0][0]
+        self.assertEqual(before,after)
+        self.assertEqual(before_ics,calendar_bytes([after],self.root))
+        generate(self.root)
+        self.assertTrue((self.root/'static/events/test_event/event.ics').is_file())
+    def test_duplicate_event_filenames_across_folders_rejected(self):
+        self.write(BASE_EVENT)
+        self.write(BASE_EVENT,slug='November 2026/test-event')
+        with self.assertRaisesRegex(ValueError,'Duplicate filename'):collect(self.root)
+    def test_nested_draft_excluded_and_nested_event_validated(self):
+        self.write(dict(BASE_EVENT,draft=True),slug='November 2026/draft-event')
+        self.assertEqual(collect(self.root)[0],[])
+        self.write(dict(BASE_EVENT,start_time='invalid'),slug='November 2026/test-event')
+        with self.assertRaisesRegex(ValueError,'24-hour'):collect(self.root)
     def test_cms_collections_and_safe_defaults(self):
         config=yaml.safe_load((ROOT/'.pages.yml').read_text())
         entries={e['name']:e for e in config['content']}
@@ -177,7 +225,8 @@ class ContentTests(unittest.TestCase):
         for entry in entries.values():
             if entry['type']=='collection':
                 self.assertTrue(next(f for f in entry['fields'] if f['name']=='draft')['default'])
-                self.assertFalse(entry['operations']['rename'])
+                self.assertEqual(entry['operations']['rename'],entry['name']=='events')
+        self.assertTrue(entries['events']['subfolders'])
         self.assertEqual(config['media']['output'],'/uploads')
         self.assertEqual(next(f for f in entries['albums']['fields'] if f['name']=='photos')['type'],'object')
         self.assertEqual(config['actions'][0]['workflow'],'export-calendar.yml')

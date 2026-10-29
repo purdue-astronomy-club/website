@@ -22,7 +22,7 @@ A CMS Save creates a GitHub commit. GitHub Actions validates the content, builds
 4. Set the date and 24-hour local time: `19:00` means 7 PM. Times use Purdue’s Indiana time zone, with daylight saving handled automatically. Do not convert to UTC yourself.
 5. For a timed event, leave End date blank if it ends the same day; supply End time if known. If End time is blank the calendar invitation uses a one-hour duration. For overnight events, supply both End date and End time. For all-day events, turn All-day on; the last occupied date is inclusive.
 6. Add a confirmed location, optional address/map link, optional public signup link, and full description using the rich-text editor.
-7. Optionally select/upload a prepared cover image. If you select a photo, fill in **Describe cover photo (required when a photo is selected)** with a brief description of what it shows. This description is required for publication.
+7. Optionally select/upload a prepared cover image. **Cover photo description (optional)** can be left blank. Add a brief description when useful for visitors using screen readers.
 8. Set status to Scheduled, confirm the details, turn Draft off, and Save.
 9. Check the Actions run, the public calendar, and the event detail page.
 
@@ -31,6 +31,15 @@ Enter an event only once. Its homepage card, month cell, month overview, event p
 Use **Tentative** when details need visible qualification. Tentative events are not featured as confirmed upcoming events. Use **Cancelled** to preserve an event’s public link and retract its invitation. Use **Postponed** when there is no replacement date; its original date is identified as such, and its calendar invitation is cancelled until a new date is scheduled. Do not delete a cancelled event if subscribers need its cancellation notice.
 
 For another occurrence, create a new event with a distinct filename and verify its dates. There is no recurrence-rule editor.
+
+## Organize event and media folders
+
+The hosted Pages CMS editor supports folder creation and moving files through **Rename**. Drag-and-drop uploads files from your computer; dragging existing entries between folders is not currently supported. See the upstream [Rename dialog](https://github.com/hunvreus/pagescms/blob/main/components/file/file-rename.tsx).
+
+- **Events and Calendar:** create or open a folder, such as `November 2026`. To move an existing event, open its **⋯ → Rename**, change `voyager.md` to `November 2026/voyager.md`, then confirm **Rename**. To move it back, use `voyager.md`. The path is relative to Events, so omit `content/events/`. Keep the final filename unchanged: the website link and calendar subscription ID depend on it. Filenames must be unique across all event subfolders. Moving into a folder keeps an event published; use Draft to withdraw it.
+- **Media:** create/open the destination folder, then use **Upload** or drag photos from your computer into it. For an existing upload, use **⋯ → Rename**, for example `photo.jpg` to `events/november-2026/photo.jpg`. The path is relative to Media, so omit `static/uploads/`. Re-select the moved image in every event, album or setting that used it, then Save; Pages CMS does not automatically update those references. The previous website stays live if an intermediate build detects a missing image.
+
+CMS saves, renames and uploads commit directly to GitHub. No local Git commands or manual push are needed. Folder moves stay within their collection or Media source.
 
 ## Automatic celestial events
 
@@ -66,9 +75,9 @@ Months without a photo use the default telescope photo. Images without permissio
 Prepare web copies first. The optional [photo preparation tool](https://purdueastro.club/photo-prep/) processes images in your browser, resizes them, and removes EXIF metadata from the exported copy. Review the result yourself. Original repository uploads are public; removing metadata after upload cannot undo disclosure.
 
 1. Open **Event Photo Albums → New**.
-2. Set a title, event date, short description, and optional cover image with alt text. If no cover is selected, the first album photo becomes the thumbnail.
+2. Set a title, event date, short description, and optional cover image. The cover photo description is optional. If no cover is selected, the first album photo becomes the thumbnail.
 3. Confirm permission to publish all photos.
-4. Under **Photos**, add one item for each image. Select/upload the image, write a description, add a caption if useful, and identify the photographer.
+4. Under **Photos**, add one item for each image. Select/upload the image, optionally add a description or caption, and identify the photographer. Photo descriptions can be left blank; photographer credit is still required.
 5. Reorder the items as desired. Each item keeps its own caption and credit.
 6. Optionally enter the related event’s saved filename without `.md`. To link back from the event, set that event’s Later photo album slug to the album filename.
 7. Turn Draft off and Save. The album appears on Gallery automatically, and each of its photos joins the homepage carousel with its own credit.

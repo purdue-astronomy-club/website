@@ -79,6 +79,8 @@ To upgrade the calendar dependency intentionally, update its exact version, run 
 
 Calendar records have stable IDs derived from saved filenames. CMS end dates are inclusive; all-day ICS/FullCalendar ends are exclusive. Timed records use Indiana `zoneinfo` conversion, explicit ISO offsets, and UTC ICS timestamps. Ambiguous/nonexistent DST wall times fail with an explanatory error. Timed events without an end time get a one-hour invitation duration. The browser uses floating Indiana wall-clock copies for display so visitor time zones cannot shift events. Original explicit offsets remain in JSON/ICS. Postponed events retract the original ICS slot and clearly label that date as original; cancellations preserve UIDs. Keep files stable and use aliases for any maintainer-led URL change.
 
+Events can be organized into nested folders from Pages CMS using **⋯ → Rename**, with paths relative to `content/events`. Moving a file while keeping its basename preserves its public URL, calendar ID and album references. Validation includes nested events and rejects duplicate published basenames across folders. Event cover and album photo descriptions are optional, including inline event/album images. Media supports nested uploads and Rename moves; existing image references must be re-selected after a move. The hosted CMS has no drag-to-move setting. See the [Officer Guide](docs/OFFICER_GUIDE.md#organize-event-and-media-folders).
+
 Hugo’s frontmatter configuration maps `publish_date` to PublishDate, so future news is excluded until a later build. The scheduled workflow refreshes date-sensitive output. Album ordering uses event date; officers/sponsors use explicit order.
 
 ## Deployment and export

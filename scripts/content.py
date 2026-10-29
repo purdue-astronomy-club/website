@@ -39,6 +39,17 @@ def read_record(path):
     return yaml.load(parts[1], Loader=ContentLoader) or {}, parts[2].strip()
 
 
+def content_paths(root=ROOT):
+    """Events may live in organizational folders; their filenames stay permanent."""
+    paths = set((root/'content').glob('*/*.md'))
+    paths.update((root/'content/events').rglob('*.md'))
+    return sorted(path for path in paths if not path.name.startswith('_'))
+
+
+def content_section(root, path):
+    return path.relative_to(root/'content').parts[0]
+
+
 def day(value):
     if isinstance(value, datetime):
         return value.date()
@@ -73,12 +84,12 @@ def public_url(value, email=False):
         raise ValueError('A public link cannot use a local network address')
 
 
-def image(root, value, alt, required=False):
+def image(root, value, alt, required=False, *, require_alt=True):
     if not value:
         if required:
             raise ValueError('Please select an image')
         return
-    if not alt or not str(alt).strip():
+    if require_alt and (not alt or not str(alt).strip()):
         raise ValueError(f'Please describe image {value} in its alt text field')
     if not str(value).startswith('/uploads/') or '..' in Path(value).parts:
         raise ValueError('Select images from the CMS Media library (/uploads/)')
@@ -141,9 +152,10 @@ def normalize(record, section, slug, now=None):
 
 def collect(root=ROOT, now=None):
     events, errors = [], []
-    for path in sorted((root / 'content').glob('*/*.md')):
-        if path.name.startswith('_'):
-            continue
+    paths = content_paths(root)
+    event_slugs = {path.stem for path in paths if content_section(root, path) == 'events'}
+    seen_records = {}
+    for path in paths:
         try:
             r, body = read_record(path)
             if not isinstance(r.get('draft'), bool):
@@ -154,16 +166,20 @@ def collect(root=ROOT, now=None):
                 raise ValueError('A title is required')
             if 'slug' in r or 'url' in r:
                 raise ValueError('Keep the saved filename as the permanent URL; use aliases when moving an entry')
-            if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', path.stem):
-                raise ValueError('Use a lowercase filename with letters, numbers and hyphens')
-            section = path.parent.name
+            if not re.fullmatch(r'[a-z0-9]+(?:[-_][a-z0-9]+)*', path.stem):
+                raise ValueError('Use a lowercase filename with letters, numbers, hyphens and underscores')
+            section = content_section(root, path)
+            key = (section, path.stem)
+            if key in seen_records:
+                raise ValueError(f'Duplicate filename also used by {seen_records[key]}; filenames must be unique within each collection, including subfolders')
+            seen_records[key] = path.relative_to(root)
             if section in {'events', 'astronomy'}:
                 if not r.get('summary'):
                     raise ValueError('Please add a short summary')
                 if section == 'events':
                     if r.get('category') not in {'observing', 'workshop', 'talk', 'outreach', 'social', 'other'}:
                         raise ValueError('Select an activity type')
-                    image(root, r.get('cover_image'), r.get('cover_alt'))
+                    image(root, r.get('cover_image'), r.get('cover_alt'), require_alt=False)
                     for field in ['registration_url', 'map_url']:
                         public_url(r.get(field))
                 else:
@@ -181,16 +197,16 @@ def collect(root=ROOT, now=None):
                 events.append(normalize(r, section, path.stem, now))
             elif section == 'albums':
                 day(r['event_date'])
-                image(root, r.get('cover_image'), r.get('cover_alt'))
+                image(root, r.get('cover_image'), r.get('cover_alt'), require_alt=False)
                 if not r.get('permission_to_publish'):
                     raise ValueError('Confirm photo publication permission')
                 if not r.get('photos'):
                     raise ValueError('Add at least one photograph')
                 for photo in r['photos']:
-                    image(root, photo.get('image'), photo.get('alt'), True)
+                    image(root, photo.get('image'), photo.get('alt'), True, require_alt=False)
                     if not photo.get('credit'):
                         raise ValueError('Each album photo needs a photographer credit')
-                if r.get('related_event_slug') and not (root/'content/events'/f"{r['related_event_slug']}.md").is_file():
+                if r.get('related_event_slug') and r['related_event_slug'] not in event_slugs:
                     raise ValueError('Related event filename does not exist')
             elif section == 'astrophotography':
                 image(root, r.get('image'), r.get('alt'), True)
@@ -211,9 +227,9 @@ def collect(root=ROOT, now=None):
             elif section == 'sponsors':
                 image(root, r.get('logo'), r.get('logo_alt'))
                 public_url(r.get('website'))
-            # Rich-text images must also exist and have alt text.
+            # Event and album image descriptions are optional, including rich text.
             for alt, value in re.findall(r'!\[([^\]]*)\]\(([^\s)]+)(?:\s+[^)]*)?\)', body):
-                image(root, value, alt, True)
+                image(root, value, alt, True, require_alt=section not in {'events', 'albums'})
             for url in re.findall(r'(?<!!)\[[^\]]*\]\(([^\s)]+)', body):
                 if not url.startswith(('/', '#', 'mailto:')):
                     public_url(url)

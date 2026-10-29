@@ -283,7 +283,7 @@ class DriveGalleryTests(unittest.TestCase):
             shutil.copytree(ROOT/folder, self.root/folder, dirs_exist_ok=True, ignore=ignore)
         # A real CMS event, album or officer record must not become a fixture or
         # require the club's uploaded photos in this isolated gallery build.
-        for entry in (self.root/'content').glob('*/*.md'):
+        for entry in (self.root/'content').glob('*/**/*.md'):
             if not entry.name.startswith('_'):
                 entry.unlink()
         (self.root/'data/calendar/banners.yml').write_text('[]\n')

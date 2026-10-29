@@ -4,7 +4,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 import os
 import re
-from content import ROOT, read_record
+from content import ROOT, content_paths, content_section, read_record
 from site_config import base_url
 
 MAX_SITE_BYTES = 1_000_000_000  # GitHub Pages published-site limit.
@@ -27,9 +27,10 @@ def validate(public=ROOT/'public'):
     banned = ['10.0.0.141', 'r410', 'authentik', 'copyparty', 'snipe-it', 'member dashboard']
     banned += [s.strip().lower() for s in os.environ.get('FORBIDDEN_PUBLIC_HOSTS', '').split(',') if s.strip()]
     draft_paths = []
-    for file in (ROOT/'content').glob('*/*.md'):
-        if not file.name.startswith('_') and read_record(file)[0].get('draft', True):
-            draft_paths.append('/'+file.parent.name+'/'+file.stem+'/')
+    root = public.parent
+    for file in content_paths(root):
+        if read_record(file)[0].get('draft', True):
+            draft_paths.append('/'+content_section(root, file)+'/'+file.stem+'/')
     files = list(public.rglob('*'))
     total_bytes = sum(file.stat().st_size for file in files if file.is_file())
     if total_bytes > MAX_SITE_BYTES:

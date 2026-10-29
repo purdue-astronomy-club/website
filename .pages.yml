@@ -15,6 +15,7 @@ content:
   label: Events and Calendar
   type: collection
   path: content/events
+  subfolders: true
   format: yaml-frontmatter
   filename:
     template: '{primary}.md'
@@ -118,8 +119,9 @@ content:
     label: Cover photograph
     type: image
   - name: cover_alt
-    label: Describe cover photo (required when a photo is selected)
+    label: Cover photo description (optional)
     type: text
+    required: false
   - name: address
     label: Public address (optional)
     type: string
@@ -132,7 +134,7 @@ content:
     options:
       format: markdown
   operations:
-    rename: false
+    rename: true
 - name: astronomy
   label: Astronomy and Night Sky
   type: collection
@@ -370,8 +372,9 @@ content:
     label: Album cover photograph
     type: image
   - name: cover_alt
-    label: Describe the cover image
+    label: Cover photo description (optional)
     type: text
+    required: false
   - name: photos
     label: Photos (repeat these fields for each image)
     type: object
@@ -386,9 +389,9 @@ content:
       type: image
       required: true
     - name: alt
-      label: What is shown? (alt text)
+      label: Photo description (optional)
       type: text
-      required: true
+      required: false
     - name: caption
       label: Optional caption
       type: text

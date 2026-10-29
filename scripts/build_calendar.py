@@ -4,7 +4,7 @@ from pathlib import Path
 import json
 import shutil
 from icalendar import Calendar, Event
-from content import ROOT, collect
+from content import ROOT, collect, content_paths, content_section
 from site_config import absolute_url, site_path
 from automatic_sky import automatic_events
 
@@ -15,11 +15,12 @@ def calendar_bytes(events, records_root=ROOT):
     cal.add('version', '2.0')
     cal.add('x-wr-calname', 'Purdue Astronomy Club')
     cal.add('x-wr-timezone', 'America/Indiana/Indianapolis')
+    sources = {f'{content_section(records_root, path)}/{path.stem}': path for path in content_paths(records_root)}
     for r in events:
         e = Event()
         e.add('uid', r['id'] + '@purdueastro.club')
         # Source mtime is deterministic in one checkout; Actions checkout time gives a fresh revision.
-        source = records_root/'content'/f"{r['id']}.md"
+        source = sources.get(r['id'], records_root/'content'/f"{r['id']}.md")
         modified = datetime.fromtimestamp(source.stat().st_mtime, timezone.utc).replace(microsecond=0) if source.exists() else datetime.now(timezone.utc).replace(microsecond=0)
         e.add('dtstamp', modified)
         e.add('last-modified', modified)
