@@ -4,7 +4,7 @@ async function openCarousel(page, {width = 1440, reducedMotion = 'no-preference'
   await page.setViewportSize({width, height: 1000});
   await page.emulateMedia({reducedMotion});
   await page.goto('/');
-  const carousel = page.getByRole('region', {name: 'Photo Gallery'});
+  const carousel = page.getByRole('region', {name: 'Member Gallery'});
   await carousel.scrollIntoViewIfNeeded();
   await page.mouse.move(0, 0);
   await expect(carousel.locator('[data-carousel-controls]')).toBeVisible();
@@ -101,7 +101,7 @@ test('gallery photographs remain browsable without JavaScript', async ({browser}
   const context = await browser.newContext({javaScriptEnabled: false, viewport: {width: 390, height: 844}});
   const page = await context.newPage();
   await page.goto('/');
-  const carousel = page.getByRole('region', {name: 'Photo Gallery'});
+  const carousel = page.getByRole('region', {name: 'Member Gallery'});
   await expect(carousel.locator('[data-carousel-controls]')).toBeHidden();
   const slides = carousel.locator('.carousel-slide');
   expect(await slides.count()).toBeGreaterThan(3);

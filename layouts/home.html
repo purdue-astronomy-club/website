@@ -2,8 +2,8 @@
 {{ partial "hero.html" . }}
 <section class="club-intro container" aria-labelledby="club-intro-title"><h2 id="club-intro-title">Our Club</h2><div class="club-description">{{ .Content }}</div></section>
 <section id="upcoming-events" class="section container"><div class="section-heading"><div><h2>Upcoming Events</h2></div><a class="text-link" href="{{ partial "events-url.html" . }}">View the calendar <span aria-hidden="true">→</span></a></div>
-{{ $events := where hugo.Data.generated.events "upcoming" true }}{{ if $events }}<div class="event-grid">{{ range first 3 $events }}{{ partial "event-card.html" . }}{{ end }}</div>{{ else }}{{ partial "empty-state.html" (dict "title" "The next night out is on the horizon." "text" "No events announced yet. Check the calendar for the next opportunity to explore with us." "url" "/events/" "label" "Explore the calendar") }}{{ end }}</section>
-{{ if hugo.Data.home.show_gallery }}<section id="home-gallery" class="gallery-feature section"><div class="container"><div class="section-heading"><div><h2 id="home-gallery-title">Photo Gallery</h2></div><a class="text-link" href="{{ relURL "gallery/" }}">Explore the gallery <span aria-hidden="true">→</span></a></div>
+{{ $events := where hugo.Data.generated.events "upcoming" true }}{{ if $events }}<div class="event-grid">{{ range first 3 $events }}{{ partial "event-card.html" . }}{{ end }}</div>{{ else }}{{ partial "empty-state.html" (dict "title" "The next night out is on the horizon." "text" "No events announced yet. Check the calendar for the next opportunity to explore with us." "url" "/events/" "label" "Calendar") }}{{ end }}</section>
+{{ if hugo.Data.home.show_gallery }}<section id="home-gallery" class="gallery-feature section"><div class="container"><div class="section-heading"><div><h2 id="home-gallery-title">Member Gallery</h2></div><a class="text-link" href="{{ relURL "gallery/" }}">Explore the gallery <span aria-hidden="true">→</span></a></div>
 {{ $photos := slice }}
 {{ range where site.RegularPages "Section" "in" (slice "albums" "astrophotography") }}
   {{ if eq .Section "astrophotography" }}
